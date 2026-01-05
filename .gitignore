@@ -1,0 +1,9 @@
+# Rider / IntelliJ
+.idea/
+
+# .NET build output
+**/bin/
+**/obj/
+
+# User/OS files
+.DS_Store
