@@ -1,11 +1,23 @@
 import { NavLink } from "react-router-dom";
 
-const linkStyle: React.CSSProperties = {
-    textDecoration: "none",
-    padding: "8px 10px",
-    borderRadius: 8,
-    fontWeight: 500,
-};
+function NavItem({ to, label }: { to: string; label: string }) {
+    return (
+        <NavLink
+            to={to}
+            style={({ isActive }) => ({
+                fontSize: 14,
+                fontWeight: 600,
+                letterSpacing: 0.2,
+                padding: "10px 10px",
+                borderRadius: 10,
+                opacity: isActive ? 1 : 0.78,
+                background: isActive ? "rgba(17,17,17,0.06)" : "transparent",
+            })}
+        >
+            {label}
+        </NavLink>
+    );
+}
 
 export default function Header() {
     return (
@@ -13,57 +25,29 @@ export default function Header() {
             style={{
                 position: "sticky",
                 top: 0,
-                zIndex: 20,
-                backdropFilter: "blur(10px)",
-                background: "rgba(255,255,255,0.75)",
-                borderBottom: "1px solid rgba(0,0,0,0.08)",
+                zIndex: 30,
+                background: "rgba(255,255,255,0.85)",
+                backdropFilter: "blur(12px)",
+                borderBottom: "1px solid rgba(17,17,17,0.10)",
             }}
         >
             <div
+                className="container"
                 style={{
-                    maxWidth: 1100,
-                    margin: "0 auto",
-                    padding: "14px 18px",
+                    height: 64,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
                 }}
             >
-                <NavLink to="/" style={{ ...linkStyle, fontSize: 18 }}>
+                <NavLink to="/" style={{ fontWeight: 800, letterSpacing: 0.2 }}>
                     praestholm
                 </NavLink>
 
-                <nav style={{ display: "flex", gap: 10 }}>
-                    <NavLink
-                        to="/about"
-                        style={({ isActive }) => ({
-                            ...linkStyle,
-                            background: isActive ? "rgba(0,0,0,0.06)" : "transparent",
-                            color: "inherit",
-                        })}
-                    >
-                        About
-                    </NavLink>
-                    <NavLink
-                        to="/projects"
-                        style={({ isActive }) => ({
-                            ...linkStyle,
-                            background: isActive ? "rgba(0,0,0,0.06)" : "transparent",
-                            color: "inherit",
-                        })}
-                    >
-                        Projects
-                    </NavLink>
-                    <NavLink
-                        to="/contact"
-                        style={({ isActive }) => ({
-                            ...linkStyle,
-                            background: isActive ? "rgba(0,0,0,0.06)" : "transparent",
-                            color: "inherit",
-                        })}
-                    >
-                        Contact
-                    </NavLink>
+                <nav style={{ display: "flex", gap: 6 }}>
+                    <NavItem to="/about" label="About" />
+                    <NavItem to="/projects" label="Projects" />
+                    <NavItem to="/contact" label="Contact" />
                 </nav>
             </div>
         </header>
