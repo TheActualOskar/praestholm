@@ -8,10 +8,12 @@ function NavItem({ to, label }: { to: string; label: string }) {
                 fontSize: 14,
                 fontWeight: 600,
                 letterSpacing: 0.2,
-                padding: "10px 10px",
+                padding: "10px 12px",
                 borderRadius: 10,
-                opacity: isActive ? 1 : 0.78,
-                background: isActive ? "rgba(17,17,17,0.06)" : "transparent",
+                color: "white",
+                opacity: isActive ? 1 : 0.75,
+                background: isActive ? "rgba(255,255,255,0.10)" : "transparent",
+                transition: "background 120ms ease, opacity 120ms ease",
             })}
         >
             {label}
@@ -26,9 +28,9 @@ export default function Header() {
                 position: "sticky",
                 top: 0,
                 zIndex: 30,
-                background: "rgba(255,255,255,0.85)",
-                backdropFilter: "blur(12px)",
-                borderBottom: "1px solid rgba(17,17,17,0.10)",
+                background: "linear-gradient(to bottom, #111 0%, #1b1b1b 55%, #111 100%)",
+                borderBottom: "1px solid rgba(255,255,255,0.08)",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.35)",
             }}
         >
             <div
@@ -40,8 +42,16 @@ export default function Header() {
                     justifyContent: "space-between",
                 }}
             >
-                <NavLink to="/" style={{ fontWeight: 800, letterSpacing: 0.2 }}>
-                    praestholm
+                <NavLink
+                    to="/"
+                    style={{
+                        fontWeight: 800,
+                        letterSpacing: 0.2,
+                        color: "white",
+                        fontSize: 16,
+                    }}
+                >
+                    Praestholm
                 </NavLink>
 
                 <nav style={{ display: "flex", gap: 6 }}>
