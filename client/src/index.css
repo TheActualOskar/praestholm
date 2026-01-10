@@ -218,4 +218,16 @@ p { color: var(--muted); line-height: 1.65; }
   }
 }
 
+/* Force backgrounds behind everything */
+.space-bg,
+.animated-bg {
+  z-index: -1;
+}
+
+/* Keep your content in normal stacking */
+.app-shell {
+  position: relative;
+  z-index: 0;
+}
+
 
