@@ -39,9 +39,9 @@ export default function TechnologiesSection() {
         {
             title: "Backend",
             items: [
-                { name: ".NET", iconSrc: "/tech/dotnet.png" },
-                { name: "REST APIs", iconSrc: "/tech/rest.png" },
-                { name: "WebSockets", iconSrc: "/tech/websocket.png" },
+                { name: ".NET", iconSrc: "/tech/frontend/dotnet.svg" },
+                { name: "REST API's", iconSrc: "/tech/backend/api.svg" },
+                { name: "MQTT", iconSrc: "/tech/backend/mqtt.svg" },
             ],
         },
         {
@@ -57,10 +57,13 @@ export default function TechnologiesSection() {
         {
             title: "DevOps",
             items: [
-                { name: "Docker", iconSrc: "/tech/docker.png" },
-                { name: "Kubernetes", iconSrc: "/tech/kubernetes.png" },
-                { name: "CI/CD", iconSrc: "/tech/cicd.png" },
-                { name: "Linux", iconSrc: "/tech/linux.png" },
+                { name: "Docker", iconSrc: "/tech/devops/docker.svg" },
+                { name: "Kubernetes", iconSrc: "/tech/devops/kubernetes.svg" },
+                { name: "Azure", iconSrc: "/tech/devops/azure.svg" },
+                { name: "Linux", iconSrc: "/tech/devops/linux.svg" },
+                { name: "Google Cloud", iconSrc: "/tech/devops/google.svg" },
+                { name: "Git", iconSrc: "/tech/devops/git.svg" },
+                { name: "Jenkins", iconSrc: "/tech/devops/jenkins.svg" },
             ],
         },
     ];
