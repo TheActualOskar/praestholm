@@ -1,22 +1,12 @@
-type TechItem = { name: string; emoji: string };
+type TechItem = { name: string; iconSrc: string };
 
-function TechCard({ name, emoji }: TechItem) {
+function TechCard({ name, iconSrc }: TechItem) {
     return (
-        <div
-            style={{
-                border: "1px solid var(--border)",
-                background: "var(--card)",
-                borderRadius: 16,
-                padding: 14,
-                display: "grid",
-                placeItems: "center",
-                gap: 10,
-                boxShadow: "0 18px 60px rgba(0,0,0,0.35)",
-                backdropFilter: "blur(10px)",
-            }}
-        >
-            <div style={{ fontSize: 28 }}>{emoji}</div>
-            <div style={{ fontSize: 13, color: "var(--muted)" }}>{name}</div>
+        <div className="techItem">
+            <div className="techIconBox" aria-hidden>
+                <img className="techIconImg" src={iconSrc} alt="" loading="lazy" />
+            </div>
+            <div className="techLabel">{name}</div>
         </div>
     );
 }
@@ -26,40 +16,41 @@ export default function TechnologiesSection() {
         {
             title: "Languages",
             items: [
-                { name: "C#", emoji: "⚡" },
-                { name: "TypeScript", emoji: "🔷" },
-                { name: "SQL", emoji: "🧠" },
+                { name: "C#", iconSrc: "/tech/csharp.svg" },
+                { name: "TypeScript", iconSrc: "/tech/typescript.png" },
+                { name: "SQL", iconSrc: "/tech/sql.png" },
             ],
         },
         {
             title: "Frontend",
             items: [
-                { name: "React", emoji: "⚛️" },
-                { name: "Vite", emoji: "⚡" },
-                { name: "CSS", emoji: "🎨" },
+                { name: "React", iconSrc: "/tech/react.png" },
+                { name: "Vite", iconSrc: "/tech/vite.png" },
+                { name: "CSS", iconSrc: "/tech/css.png" },
             ],
         },
         {
             title: "Backend",
             items: [
-                { name: ".NET", emoji: "🧩" },
-                { name: "REST APIs", emoji: "🔌" },
-                { name: "WebSockets", emoji: "📡" },
+                { name: ".NET", iconSrc: "/tech/dotnet.png" },
+                { name: "REST APIs", iconSrc: "/tech/rest.png" },
+                { name: "WebSockets", iconSrc: "/tech/websocket.png" },
             ],
         },
         {
             title: "Database",
             items: [
-                { name: "PostgreSQL", emoji: "🐘" },
-                { name: "Neo4j", emoji: "🕸️" },
+                { name: "PostgreSQL", iconSrc: "/tech/postgresql.png" },
+                { name: "Neo4j", iconSrc: "/tech/neo4j.png" },
             ],
         },
         {
             title: "DevOps",
             items: [
-                { name: "Docker", emoji: "🐳" },
-                { name: "CI/CD", emoji: "🔁" },
-                { name: "Linux", emoji: "🐧" },
+                { name: "Docker", iconSrc: "/tech/docker.png" },
+                { name: "Kubernetes", iconSrc: "/tech/kubernetes.png" },
+                { name: "CI/CD", iconSrc: "/tech/cicd.png" },
+                { name: "Linux", iconSrc: "/tech/linux.png" },
             ],
         },
     ];
@@ -67,44 +58,20 @@ export default function TechnologiesSection() {
     return (
         <section className="section">
             <div className="container">
-                <h2
-                    style={{
-                        margin: 0,
-                        fontSize: 40,
-                        textAlign: "center",
-                        letterSpacing: 0.2,
-                        color: "rgba(255,255,255,0.92)",
-                    }}
-                >
-                    Technologies I Work With
+                <h2 className="techHeading">
+                    <span style={{ color: "var(--accent2)" }}>Technologies</span> I Work With
                 </h2>
 
-                <p style={{ textAlign: "center", marginTop: 12 }}>
+                <p className="techSubheading">
                     Tools and frameworks I use to build robust systems and clean interfaces.
                 </p>
 
-                <div
-                    style={{
-                        marginTop: 34,
-                        display: "grid",
-                        gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
-                        gap: 22,
-                    }}
-                >
+                <div className="techColumns">
                     {columns.map((col) => (
                         <div key={col.title}>
-                            <div
-                                style={{
-                                    fontSize: 18,
-                                    fontWeight: 800,
-                                    marginBottom: 14,
-                                    color: "rgba(255,255,255,0.88)",
-                                }}
-                            >
-                                {col.title}
-                            </div>
+                            <div className="techColumnTitle">{col.title}</div>
 
-                            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 14 }}>
+                            <div className="techCardsGrid">
                                 {col.items.map((t) => (
                                     <TechCard key={t.name} {...t} />
                                 ))}
@@ -112,9 +79,6 @@ export default function TechnologiesSection() {
                         </div>
                     ))}
                 </div>
-
-                {/* Mobile responsiveness */}
-                <div className="tech-grid-mobile-spacer" />
             </div>
         </section>
     );

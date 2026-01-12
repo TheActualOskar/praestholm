@@ -1,3 +1,7 @@
+// HomePage.tsx
+import * as React from "react";
+import TechnologiesSection from "./TechnologiesSection"; // <-- adjust path if needed
+
 function Pill({ children }: { children: React.ReactNode }) {
     return (
         <span
@@ -12,25 +16,6 @@ function Pill({ children }: { children: React.ReactNode }) {
         >
       {children}
     </span>
-    );
-}
-
-function TechCard({ label }: { label: string }) {
-    return (
-        <div
-            style={{
-                border: "1px solid rgba(255,255,255,0.12)",
-                background: "rgba(255,255,255,0.06)",
-                borderRadius: 16,
-                padding: 14,
-                display: "grid",
-                placeItems: "center",
-                boxShadow: "0 18px 60px rgba(0,0,0,0.35)",
-                backdropFilter: "blur(10px)",
-            }}
-        >
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.75)" }}>{label}</div>
-        </div>
     );
 }
 
@@ -68,14 +53,6 @@ export default function HomePage() {
                 "Structured apps for maintainability and testing with clear separation of concerns.",
             tags: ["Architecture", "Separation", "Maintainability"],
         },
-    ];
-
-    const techColumns: { title: string; items: string[] }[] = [
-        { title: "Languages", items: ["C#", "TypeScript", "SQL"] },
-        { title: "Frontend", items: ["React", "Vite", "CSS"] },
-        { title: "Backend", items: [".NET", "REST APIs", "WebSockets"] },
-        { title: "Database", items: ["PostgreSQL", "Neo4j"] },
-        { title: "DevOps", items: ["Docker", "CI/CD", "Linux"] },
     ];
 
     return (
@@ -118,8 +95,15 @@ export default function HomePage() {
                                 Full<span style={{ opacity: 0.75 }}>stack</span>
                             </h1>
 
-                            <p style={{ marginTop: 12, maxWidth: 420, color: "rgba(255,255,255,0.68)" }}>
-                                I build robust backend systems and connect them to clean, usable web interfaces.
+                            <p
+                                style={{
+                                    marginTop: 12,
+                                    maxWidth: 420,
+                                    color: "rgba(255,255,255,0.68)",
+                                }}
+                            >
+                                I build robust backend systems and connect them to clean, usable web
+                                interfaces.
                             </p>
 
                             <ul
@@ -164,10 +148,23 @@ export default function HomePage() {
                                 >
                                     OSKAR PRÆSTHOLM
                                 </div>
-                                <div style={{ fontSize: 18, fontWeight: 800, marginTop: 6, color: "rgba(255,255,255,0.92)" }}>
+                                <div
+                                    style={{
+                                        fontSize: 18,
+                                        fontWeight: 800,
+                                        marginTop: 6,
+                                        color: "rgba(255,255,255,0.92)",
+                                    }}
+                                >
                                     Software Engineer
                                 </div>
-                                <div style={{ fontSize: 13, marginTop: 10, color: "rgba(255,255,255,0.65)" }}>
+                                <div
+                                    style={{
+                                        fontSize: 13,
+                                        marginTop: 10,
+                                        color: "rgba(255,255,255,0.65)",
+                                    }}
+                                >
                                     (add your photo later)
                                 </div>
                             </div>
@@ -207,7 +204,8 @@ export default function HomePage() {
                                     color: "rgba(255,255,255,0.68)",
                                 }}
                             >
-                                I like systems that run well in production: automation, containers, and observability.
+                                I like systems that run well in production: automation, containers,
+                                and observability.
                             </p>
 
                             <ul
@@ -248,12 +246,20 @@ export default function HomePage() {
             {/* FEATURED */}
             <section style={{ padding: "0 0 80px" }}>
                 <div className="container">
-                    <h2 style={{ margin: 0, fontSize: 22, letterSpacing: 0.2, color: "rgba(255,255,255,0.92)" }}>
+                    <h2
+                        style={{
+                            margin: 0,
+                            fontSize: 22,
+                            letterSpacing: 0.2,
+                            color: "rgba(255,255,255,0.92)",
+                        }}
+                    >
                         Featured work
                     </h2>
 
                     <p style={{ marginTop: 10, maxWidth: 740, color: "rgba(255,255,255,0.68)" }}>
-                        A few projects that reflect what I enjoy building: scalable backend systems, real-time data, and clean architecture.
+                        A few projects that reflect what I enjoy building: scalable backend systems,
+                        real-time data, and clean architecture.
                     </p>
 
                     <div
@@ -277,11 +283,20 @@ export default function HomePage() {
                                     backdropFilter: "blur(10px)",
                                 }}
                             >
-                                <h3 style={{ margin: 0, fontSize: 16, letterSpacing: 0.2, color: "rgba(255,255,255,0.92)" }}>
+                                <h3
+                                    style={{
+                                        margin: 0,
+                                        fontSize: 16,
+                                        letterSpacing: 0.2,
+                                        color: "rgba(255,255,255,0.92)",
+                                    }}
+                                >
                                     {p.title}
                                 </h3>
 
-                                <p style={{ marginTop: 10, color: "rgba(255,255,255,0.68)" }}>{p.description}</p>
+                                <p style={{ marginTop: 10, color: "rgba(255,255,255,0.68)" }}>
+                                    {p.description}
+                                </p>
 
                                 <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
                                     {p.tags.map((t) => (
@@ -304,78 +319,8 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* TECHNOLOGIES */}
-            <section className="section">
-                <div className="container">
-                    <h2
-                        style={{
-                            margin: 0,
-                            fontSize: 40,
-                            textAlign: "center",
-                            letterSpacing: 0.2,
-                            color: "rgba(255,255,255,0.92)",
-                        }}
-                    >
-                        <span style={{ color: "var(--accent2)" }}>Technologies</span> I Work With
-                    </h2>
-
-                    <p style={{ textAlign: "center", marginTop: 12, color: "rgba(255,255,255,0.68)" }}>
-                        Tools and frameworks I use to build robust systems and clean interfaces.
-                    </p>
-
-                    <div
-                        className="tech-grid-fix"
-                        style={{
-                            marginTop: 34,
-                            display: "grid",
-                            gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
-                            gap: 22,
-                        }}
-                    >
-                        {techColumns.map((col) => (
-                            <div key={col.title}>
-                                <div
-                                    style={{
-                                        fontSize: 18,
-                                        fontWeight: 800,
-                                        marginBottom: 14,
-                                        color: "rgba(255,255,255,0.88)",
-                                    }}
-                                >
-                                    {col.title}
-                                </div>
-
-                                <div
-                                    style={{
-                                        display: "grid",
-                                        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                                        gap: 14,
-                                    }}
-                                >
-                                    {col.items.map((item) => (
-                                        <TechCard key={item} label={item} />
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <style>
-                        {`
-              @media (max-width: 1100px) {
-                .tech-grid-fix {
-                  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                }
-              }
-              @media (max-width: 650px) {
-                .tech-grid-fix {
-                  grid-template-columns: 1fr !important;
-                }
-              }
-            `}
-                    </style>
-                </div>
-            </section>
+            {/* TECHNOLOGIES (uses your separate component) */}
+            <TechnologiesSection />
         </>
     );
 }
