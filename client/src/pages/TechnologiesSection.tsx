@@ -21,6 +21,7 @@ export default function TechnologiesSection() {
                 { name: "Java", iconSrc: "/tech/languages/Java.svg" },
                 { name: "C", iconSrc: "/tech/languages/c.svg" },
                 { name: "Bash", iconSrc: "/tech/languages/bash.svg" },
+                { name: "PHP", iconSrc: "/tech/languages/PHP.svg" },
                 
             ],
         },
@@ -42,6 +43,7 @@ export default function TechnologiesSection() {
                 { name: ".NET", iconSrc: "/tech/frontend/dotnet.svg" },
                 { name: "REST API's", iconSrc: "/tech/backend/api.svg" },
                 { name: "MQTT", iconSrc: "/tech/backend/mqtt.svg" },
+                { name: "Node.js", iconSrc: "/tech/backend/nodejs.svg" },
             ],
         },
         {
@@ -64,6 +66,7 @@ export default function TechnologiesSection() {
                 { name: "Google Cloud", iconSrc: "/tech/devops/google.svg" },
                 { name: "Git", iconSrc: "/tech/devops/git.svg" },
                 { name: "Jenkins", iconSrc: "/tech/devops/jenkins.svg" },
+                { name: "Elasticsearch", iconSrc: "/tech/devops/elasticsearch.svg" },
             ],
         },
     ];
