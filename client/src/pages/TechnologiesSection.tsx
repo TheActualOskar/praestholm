@@ -17,8 +17,11 @@ export default function TechnologiesSection() {
             title: "Languages",
             items: [
                 { name: "C#", iconSrc: "/tech/csharp.svg" },
-                { name: "TypeScript", iconSrc: "/tech/typescript.png" },
-                { name: "SQL", iconSrc: "/tech/sql.png" },
+                { name: "Python", iconSrc: "/tech/python.svg" },
+                { name: "Java", iconSrc: "/tech/Java.svg" },
+                { name: "C", iconSrc: "/tech/c.svg" },
+                { name: "JavaScript", iconSrc: "/tech/javascript.svg" },
+                { name: "TypeScript", iconSrc: "/tech/typescript.svg" },
             ],
         },
         {
