@@ -1,6 +1,5 @@
-// HomePage.tsx
 import * as React from "react";
-import TechnologiesSection from "./TechnologiesSection"; // <-- adjust path if needed
+import TechnologiesSection from "./TechnologiesSection"; 
 
 function Pill({ children }: { children: React.ReactNode }) {
     return (
@@ -319,7 +318,6 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* TECHNOLOGIES (uses your separate component) */}
             <TechnologiesSection />
         </>
     );
