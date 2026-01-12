@@ -16,12 +16,12 @@ export default function TechnologiesSection() {
         {
             title: "Languages",
             items: [
-                { name: "C#", iconSrc: "/tech/csharp.svg" },
-                { name: "Python", iconSrc: "/tech/python.svg" },
-                { name: "Java", iconSrc: "/tech/Java.svg" },
-                { name: "C", iconSrc: "/tech/c.svg" },
-                { name: "JavaScript", iconSrc: "/tech/javascript.svg" },
-                { name: "TypeScript", iconSrc: "/tech/typescript.svg" },
+                { name: "C#", iconSrc: "/tech/languages/csharp.svg" },
+                { name: "Python", iconSrc: "/tech/languages/python.svg" },
+                { name: "Java", iconSrc: "/tech/languages/Java.svg" },
+                { name: "C", iconSrc: "/tech/languages/c.svg" },
+                { name: "JavaScript", iconSrc: "/tech/languages/javascript.svg" },
+                { name: "TypeScript", iconSrc: "/tech/languages/typescript.svg" },
             ],
         },
         {
@@ -43,8 +43,11 @@ export default function TechnologiesSection() {
         {
             title: "Database",
             items: [
-                { name: "PostgreSQL", iconSrc: "/tech/postgresql.png" },
-                { name: "Neo4j", iconSrc: "/tech/neo4j.png" },
+                { name: "PostgreSQL", iconSrc: "/tech/database/postgresql.svg" },
+                { name: "MongoDB", iconSrc: "/tech/database/mongoDB.svg" },
+                { name: "Microsoft SQL Server", iconSrc: "/tech/database/MicrosoftSQLServer.svg" },
+                { name: "Neo4j", iconSrc: "/tech/database/neo4j.svg" },
+                { name: "Redis", iconSrc: "/tech/database/redis.svg" },
             ],
         },
         {
