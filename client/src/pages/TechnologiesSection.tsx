@@ -44,6 +44,7 @@ export default function TechnologiesSection() {
                 { name: "REST API's", iconSrc: "/tech/backend/api.svg" },
                 { name: "MQTT", iconSrc: "/tech/backend/mqtt.svg" },
                 { name: "Node.js", iconSrc: "/tech/backend/nodejs.svg" },
+                { name: "Akka.net", iconSrc: "/tech/backend/Akka.svg" },
             ],
         },
         {
