@@ -20,16 +20,20 @@ export default function TechnologiesSection() {
                 { name: "Python", iconSrc: "/tech/languages/python.svg" },
                 { name: "Java", iconSrc: "/tech/languages/Java.svg" },
                 { name: "C", iconSrc: "/tech/languages/c.svg" },
-                { name: "JavaScript", iconSrc: "/tech/languages/javascript.svg" },
-                { name: "TypeScript", iconSrc: "/tech/languages/typescript.svg" },
+                { name: "Bash", iconSrc: "/tech/languages/bash.svg" },
+                
             ],
         },
         {
             title: "Frontend",
             items: [
-                { name: "React", iconSrc: "/tech/react.png" },
-                { name: "Vite", iconSrc: "/tech/vite.png" },
-                { name: "CSS", iconSrc: "/tech/css.png" },
+                { name: "React", iconSrc: "/tech/frontend/react.svg" },
+                { name: "Razor Pages", iconSrc: "/tech/frontend/dotnet.svg" },
+                { name: "TypeScript", iconSrc: "/tech/languages/typescript.svg" },
+                { name: "JavaScript", iconSrc: "/tech/languages/javascript.svg" },
+                { name: "HTML", iconSrc: "/tech/frontend/html5.svg" },
+                { name: "CSS", iconSrc: "/tech/frontend/css.svg" },
+                
             ],
         },
         {
