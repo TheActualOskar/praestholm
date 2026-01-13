@@ -7,3 +7,6 @@
 
 # User/OS files
 .DS_Store
+
+appsettings.Development.json
+Praestholm.Api/appsettings.Development.json

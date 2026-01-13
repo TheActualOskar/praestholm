@@ -1,5 +1,6 @@
 import * as React from "react";
-import TechnologiesSection from "./TechnologiesSection"; 
+import TechnologiesSection from "./TechnologiesSection";
+import ProjectsSection from "./ProjectsSection";
 
 function Pill({ children }: { children: React.ReactNode }) {
     return (
@@ -317,8 +318,9 @@ export default function HomePage() {
                     </style>
                 </div>
             </section>
-
+            <ProjectsSection/>
             <TechnologiesSection />
+            
         </>
     );
 }
