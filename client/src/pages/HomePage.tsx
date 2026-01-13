@@ -1,6 +1,6 @@
 import * as React from "react";
 import TechnologiesSection from "./TechnologiesSection";
-import ProjectsSection from "./ProjectsSection";
+
 
 function Pill({ children }: { children: React.ReactNode }) {
     return (
@@ -242,7 +242,7 @@ export default function HomePage() {
                     </style>
                 </div>
             </section>
-
+            <TechnologiesSection />
             {/* FEATURED */}
             <section style={{ padding: "0 0 80px" }}>
                 <div className="container">
@@ -318,8 +318,8 @@ export default function HomePage() {
                     </style>
                 </div>
             </section>
-            <ProjectsSection/>
-            <TechnologiesSection />
+           
+            
             
         </>
     );

@@ -1,5 +1,84 @@
-import { useEffect, useState } from "react";
+import * as React from "react";
+import { useEffect, useMemo, useState } from "react";
 import { fetchProjects, type Project } from "../api/projects";
+
+function Pill({ children }: { children: React.ReactNode }) {
+    return (
+        <span
+            style={{
+                fontSize: 12,
+                padding: "6px 10px",
+                borderRadius: 999,
+                border: "1px solid rgba(255,255,255,0.12)",
+                background: "rgba(255,255,255,0.06)",
+                color: "rgba(255,255,255,0.78)",
+            }}
+        >
+      {children}
+    </span>
+    );
+}
+
+function ProjectCard({ p }: { p: Project }) {
+    const pills = useMemo(() => {
+        const list: string[] = [];
+        if (p.isFeatured) list.push("Featured");
+        if (p.language) list.push(p.language);
+        list.push(`★ ${p.stars}`);
+        list.push(`⑂ ${p.forks}`);
+        return list;
+    }, [p]);
+
+    return (
+        <a
+            href={p.htmlUrl}
+            target="_blank"
+            rel="noreferrer"
+            style={{
+                textDecoration: "none",
+                color: "inherit",
+                display: "block",
+                border: "1px solid rgba(255,255,255,0.12)",
+                borderRadius: 18,
+                padding: 18,
+                background: "rgba(255,255,255,0.06)",
+                boxShadow: "0 18px 60px rgba(0,0,0,0.35)",
+                backdropFilter: "blur(10px)",
+            }}
+        >
+            <h3
+                style={{
+                    margin: 0,
+                    fontSize: 16,
+                    letterSpacing: 0.2,
+                    color: "rgba(255,255,255,0.92)",
+                }}
+            >
+                {p.title}
+            </h3>
+
+            {p.description ? (
+                <p style={{ marginTop: 10, color: "rgba(255,255,255,0.68)", lineHeight: 1.45 }}>
+                    {p.description}
+                </p>
+            ) : (
+                <p style={{ marginTop: 10, color: "rgba(255,255,255,0.55)", lineHeight: 1.45 }}>
+                    No description yet — add one in the GitHub repo “About” box.
+                </p>
+            )}
+
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
+                {pills.map((t) => (
+                    <Pill key={t}>{t}</Pill>
+                ))}
+            </div>
+
+            <div style={{ marginTop: 12, fontSize: 12, color: "rgba(255,255,255,0.55)" }}>
+                Updated {new Date(p.updatedAt).toLocaleDateString()}
+            </div>
+        </a>
+    );
+}
 
 export default function ProjectsSection() {
     const [projects, setProjects] = useState<Project[]>([]);
@@ -11,65 +90,60 @@ export default function ProjectsSection() {
             .catch((e) => setError(e instanceof Error ? e.message : "Failed to load projects"));
     }, []);
 
+    const sorted = useMemo(() => {
+        return [...projects].sort((a, b) => {
+            if (a.isFeatured !== b.isFeatured) return a.isFeatured ? -1 : 1;
+            return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+        });
+    }, [projects]);
+
     return (
-        <section style={{ padding: "40px 0" }}>
-            <h2 style={{ marginBottom: 16 }}>Projects</h2>
+        <section style={{ padding: "0 0 80px" }}>
+            <div className="container">
+                <h2
+                    style={{
+                        margin: 0,
+                        fontSize: 22,
+                        letterSpacing: 0.2,
+                        color: "rgba(255,255,255,0.92)",
+                    }}
+                >
+                    
+                </h2>
 
-            {error && (
-                <div style={{ border: "1px solid rgba(255,255,255,0.2)", padding: 12, borderRadius: 12 }}>
-                    {error}
+
+
+                {error && (
+                    <div style={{ border: "1px solid rgba(255,255,255,0.2)", padding: 12, borderRadius: 12, marginTop: 16 }}>
+                        {error}
+                    </div>
+                )}
+
+                {!error && sorted.length === 0 && <div style={{ marginTop: 16 }}>Loading…</div>}
+
+                <div
+                    className="projects-grid-fix"
+                    style={{
+                        marginTop: 18,
+                        display: "grid",
+                        gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+                        gap: 14,
+                    }}
+                >
+                    {sorted.map((p) => (
+                        <ProjectCard key={p.htmlUrl} p={p} />
+                    ))}
                 </div>
-            )}
 
-            {!error && projects.length === 0 && <div>Loading…</div>}
-
-            <div style={{ display: "grid", gap: 14, gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
-                {projects.map((p) => (
-                    <a
-                        key={p.htmlUrl}
-                        href={p.htmlUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{
-                            display: "block",
-                            textDecoration: "none",
-                            color: "inherit",
-                            border: "1px solid rgba(255,255,255,0.12)",
-                            background: "rgba(255,255,255,0.06)",
-                            borderRadius: 16,
-                            padding: 14
-                        }}
-                    >
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-                            <div style={{ fontWeight: 600 }}>{p.title}</div>
-                            {p.isFeatured && (
-                                <span
-                                    style={{
-                                        fontSize: 12,
-                                        padding: "4px 10px",
-                                        borderRadius: 999,
-                                        border: "1px solid rgba(255,255,255,0.18)"
-                                    }}
-                                >
-                  Featured
-                </span>
-                            )}
-                        </div>
-
-                        {p.description && (
-                            <div style={{ marginTop: 8, opacity: 0.85, lineHeight: 1.4 }}>
-                                {p.description}
-                            </div>
-                        )}
-
-                        <div style={{ marginTop: 10, display: "flex", gap: 10, flexWrap: "wrap", opacity: 0.85, fontSize: 13 }}>
-                            {p.language && <span>{p.language}</span>}
-                            <span>★ {p.stars}</span>
-                            <span>⑂ {p.forks}</span>
-                            <span>{new Date(p.updatedAt).toLocaleDateString()}</span>
-                        </div>
-                    </a>
-                ))}
+                <style>
+                    {`
+            @media (max-width: 980px) {
+              .projects-grid-fix {
+                grid-template-columns: 1fr !important;
+              }
+            }
+          `}
+                </style>
             </div>
         </section>
     );
