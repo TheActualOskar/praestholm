@@ -39,12 +39,12 @@ export default function FeaturedProjectsSection() {
     return (
         <section style={{ padding: "0 0 80px" }}>
             <div className="container">
-                <h2 style={{ margin: 0, fontSize: 22, letterSpacing: 0.2, color: "rgba(255,255,255,0.92)" }}>
-                    Featured work
+                <h2 className="techHeading">
+                    <span style={{ color: "var(--accent2)" }}>Featured</span> Work
                 </h2>
 
                 <p style={{ marginTop: 10, maxWidth: 740, color: "rgba(255,255,255,0.68)" }}>
-                    A few selected projects pulled from GitHub (topic: <b>featured</b>).
+                  
                 </p>
 
                 {error && (
