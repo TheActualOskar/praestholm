@@ -323,3 +323,102 @@ p { color: var(--muted); line-height: 1.65; }
   height: 26px;
   opacity: 0; 
 }
+/* HOME HERO (Name + Degree + Rotating line)*/
+  
+
+.homeHero {
+  padding: 96px 0 40px;
+}
+
+.heroInner {
+  max-width: 980px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.heroName {
+  font-size: clamp(40px, 6vw, 76px);
+  line-height: 1.02;
+  letter-spacing: -1px;
+  margin: 0;
+  color: var(--text);
+}
+
+.heroDegree {
+  margin-top: 12px;
+  font-size: 16px;
+  color: var(--muted);
+}
+
+/* keeps layout stable while the line changes */
+.heroRotator {
+  margin-top: 18px;
+  min-height: 34px;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/* fade/slide animation per line swap */
+.rotatingLine {
+  display: inline-block;
+  animation: fadeSlide 2600ms ease both;
+}
+
+@keyframes fadeSlide {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  12% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  85% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.heroCtas {
+  margin-top: 26px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.heroBtn {
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.88);
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1;
+  transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
+}
+
+.heroBtn:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.heroBtn.primary {
+  background: color-mix(in srgb, var(--accent2) 18%, transparent);
+  border-color: color-mix(in srgb, var(--accent2) 35%, transparent);
+}
+
+@media (max-width: 900px) {
+  .homeHero {
+    padding: 72px 0 28px;
+  }
+  .heroRotator {
+    font-size: 16px;
+  }
+}
