@@ -323,8 +323,10 @@ p { color: var(--muted); line-height: 1.65; }
   height: 26px;
   opacity: 0; 
 }
-/* HOME HERO (Name + Degree + Rotating line)*/
-  
+/* =========================================
+   HOME HERO (Name + Degree + Rotating line)
+   Additive styles – avoids overriding existing look
+   ========================================= */
 
 .homeHero {
   padding: 96px 0 40px;
@@ -341,7 +343,39 @@ p { color: var(--muted); line-height: 1.65; }
   line-height: 1.02;
   letter-spacing: -1px;
   margin: 0;
-  color: var(--text);
+
+  /* IMPORTANT: no base color here -> doesn’t override anything */
+}
+
+/* Gradient name (only if supported) */
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  .heroName {
+    background:
+            radial-gradient(120% 140% at 18% 25%, rgba(70, 214, 199, 1) 0%, rgba(70, 214, 199, 0) 55%),
+            radial-gradient(120% 140% at 82% 30%, rgba(56, 189, 248, 1) 0%, rgba(56, 189, 248, 0) 55%),
+            linear-gradient(90deg, rgba(70, 214, 199, 1) 0%, rgba(56, 189, 248, 1) 55%, rgba(34, 211, 238, 1) 100%);
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+
+    text-shadow: 0 10px 30px rgba(0,0,0,0.35);
+
+    background-size: 480% 480%;
+    animation: nameGradientShift 5.5s ease-in-out infinite;
+  }
+}
+@keyframes nameGradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .heroName { animation: none !important; }
 }
 
 .heroDegree {
@@ -365,22 +399,10 @@ p { color: var(--muted); line-height: 1.65; }
 }
 
 @keyframes fadeSlide {
-  0% {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  12% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  85% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
+  0% { opacity: 0; transform: translateY(6px); }
+  12% { opacity: 1; transform: translateY(0); }
+  85% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-6px); }
 }
 
 .heroCtas {
@@ -410,15 +432,13 @@ p { color: var(--muted); line-height: 1.65; }
 }
 
 .heroBtn.primary {
-  background: color-mix(in srgb, var(--accent2) 18%, transparent);
-  border-color: color-mix(in srgb, var(--accent2) 35%, transparent);
+  background: rgba(70, 214, 199, 0.16);
+  border-color: rgba(70, 214, 199, 0.38);
 }
 
+
 @media (max-width: 900px) {
-  .homeHero {
-    padding: 72px 0 28px;
-  }
-  .heroRotator {
-    font-size: 16px;
-  }
+  .homeHero { padding: 72px 0 28px; }
+  .heroRotator { font-size: 16px; }
 }
+

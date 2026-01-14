@@ -25,7 +25,8 @@ export default function HomePage() {
             <section className="homeHero">
                 <div className="container heroInner">
                     <h2>Hello I'm</h2>
-                    <h1 className="heroName">Oskar Præstholm</h1>
+                    <h1 className="heroName heroNameShine">Oskar Præstholm</h1>
+
 
                     <div className="heroDegree">
                         <h2>Masters Software Engineering</h2>
