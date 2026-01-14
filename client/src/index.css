@@ -442,3 +442,107 @@ p { color: var(--muted); line-height: 1.65; }
   .heroRotator { font-size: 16px; }
 }
 
+/* =========================================
+   Make landing hero fill the first screen
+   ========================================= */
+
+.homeHero {
+  /* take a full page */
+  min-height: calc(100svh - 72px); /* subtract nav height if you have one */
+  display: grid;
+  place-items: center;
+  padding: 0; /* override the old padding so it can truly center */
+}
+
+/* if your nav isn't 72px, change that number.
+   If you don't have a fixed nav, you can use:
+   min-height: 100svh; */
+
+.heroInner {
+  padding: 96px 0 64px; /* keeps spacing nice while still centered */
+}
+
+/* scroll hint */
+.scrollHint {
+  margin-top: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255,255,255,0.55);
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  user-select: none;
+}
+
+.scrollHintDot {
+  width: 18px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.22);
+  display: inline-grid;
+  place-items: start center;
+  padding-top: 6px;
+}
+
+.scrollHintDot::after {
+  content: "";
+  width: 4px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.55);
+  animation: scrollDot 1.4s ease-in-out infinite;
+}
+
+@keyframes scrollDot {
+  0%   { transform: translateY(0); opacity: 0.5; }
+  50%  { transform: translateY(10px); opacity: 1; }
+  100% { transform: translateY(0); opacity: 0.5; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrollHintDot::after { animation: none !important; }
+}
+/* =========================================
+   Bouncing down arrow
+   ========================================= */
+
+.jumpArrow {
+  margin-top: 26px;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.06);
+  box-shadow:
+          0 18px 60px rgba(0,0,0,0.40),
+          0 0 0 6px rgba(70, 214, 199, 0.06);
+
+  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+  animation: jumpArrowBounce 1.35s ease-in-out infinite;
+}
+
+.jumpArrow:hover {
+  transform: translateY(-2px);
+  border-color: rgba(70, 214, 199, 0.45);
+  background: rgba(255,255,255,0.08);
+}
+
+.jumpArrowIcon {
+  font-size: 18px;
+  line-height: 1;
+  color: rgba(255,255,255,0.88);
+  transform: translateY(-1px);
+}
+
+@keyframes jumpArrowBounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(8px); }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .jumpArrow { animation: none !important; }
+}

@@ -2,7 +2,6 @@ import * as React from "react";
 import TechnologiesSection from "./TechnologiesSection";
 import FeaturedProjectsSection from "../components/FeaturedProjectsSection";
 
-
 const ROTATING_LINES = [
     "Building backend systems that scale.",
     "Real-time pub/sub and event-driven architectures.",
@@ -25,8 +24,8 @@ export default function HomePage() {
             <section className="homeHero">
                 <div className="container heroInner">
                     <h2>Hello I'm</h2>
-                    <h1 className="heroName heroNameShine">Oskar Præstholm</h1>
 
+                    <h1 className="heroName heroNameShine">Oskar Præstholm</h1>
 
                     <div className="heroDegree">
                         <h2>Masters Software Engineering</h2>
@@ -50,9 +49,24 @@ export default function HomePage() {
                         </a>
                     </div>
                 </div>
+
+                {/* Bouncing arrow (no hash -> no page auto-jump) */}
+                <button
+                    type="button"
+                    className="jumpArrow"
+                    aria-label="Scroll down"
+                    onClick={() =>
+                        document.getElementById("below-hero")?.scrollIntoView({ behavior: "smooth" })
+                    }
+                >
+          <span className="jumpArrowIcon" aria-hidden>
+            ↓
+          </span>
+                </button>
             </section>
 
-            {/* Keep these sections if you want them below the hero */}
+
+
             <TechnologiesSection />
             <FeaturedProjectsSection />
         </>
