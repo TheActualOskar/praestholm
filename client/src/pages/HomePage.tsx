@@ -68,6 +68,9 @@ export default function HomePage() {
 
 
             <TechnologiesSection />
+     
+            
+            
             <FeaturedProjectsSection />
         </>
     );

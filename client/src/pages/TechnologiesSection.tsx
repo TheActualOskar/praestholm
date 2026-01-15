@@ -8,7 +8,10 @@ function TechCard({ name, iconSrc }: TechItem) {
             </div>
             <div className="techLabel">{name}</div>
         </div>
+        
+        
     );
+    
 }
 
 export default function TechnologiesSection() {
@@ -98,6 +101,12 @@ export default function TechnologiesSection() {
                     ))}
                 </div>
             </div>
+            
         </section>
+     
+     
+     
+     
+        
     );
 }

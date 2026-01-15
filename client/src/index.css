@@ -546,3 +546,8 @@ p { color: var(--muted); line-height: 1.65; }
 @media (prefers-reduced-motion: reduce) {
   .jumpArrow { animation: none !important; }
 }
+.techFooterAction{
+  margin-top: 28px;
+  display: flex;
+  justify-content: center;
+}
