@@ -71,7 +71,7 @@ function LinkedInIcon() {
                 fontWeight: 800,
                 lineHeight: 1,
                 letterSpacing: -0.6,
-                transform: "translateY(-1px)", // tiny nudge for optical alignment
+                transform: "translateY(-1px)", 
             }}
         >
       in
@@ -133,8 +133,8 @@ export default function Header() {
                 {/* Right side: nav + icons */}
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                     <nav style={{ display: "flex", gap: 6 }}>
-                        <NavItem to="/about" label="About" />
                         <NavItem to="/projects" label="Projects" />
+                        <NavItem to="/about" label="About" />
                         <NavItem to="/contact" label="Contact" />
                     </nav>
 

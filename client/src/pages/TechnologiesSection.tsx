@@ -68,6 +68,7 @@ export default function TechnologiesSection() {
                 { name: "Git", iconSrc: "/tech/devops/git.svg" },
                 { name: "Jenkins", iconSrc: "/tech/devops/jenkins.svg" },
                 { name: "Elasticsearch", iconSrc: "/tech/devops/elasticsearch.svg" },
+                { name: "Apache Kafka", iconSrc: "/tech/devops/Kafka.svg" },
             ],
         },
     ];
