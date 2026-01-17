@@ -1,0 +1,48 @@
+name: Deploy to Simply
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Build frontend (Vite)
+        working-directory: client
+        run: |
+          npm ci
+          npm run build
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Publish API
+        run: |
+          dotnet publish Praestholm.Api/Praestholm.Api.csproj -c Release -o out/publish
+
+      - name: Copy frontend into publish wwwroot
+        run: |
+          rm -rf out/publish/wwwroot/*
+          cp -R client/dist/* out/publish/wwwroot/
+
+      - name: Deploy via FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          local-dir: out/publish/
+          server-dir: ${{ secrets.FTP_REMOTE_DIR }}
