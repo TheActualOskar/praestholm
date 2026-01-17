@@ -10,9 +10,10 @@ export default function ContactPage() {
                 <p style={{ margin: 0 }}>
                     Email: oskar.svendborg@gmail.com
                 </p>
-              
+                <p style={{ marginTop: 8, marginBottom: 0 }}>
+                   Test
+                </p>
             </div>
         </div>
     );
 }
-<
