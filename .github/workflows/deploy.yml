@@ -33,9 +33,10 @@ jobs:
           dotnet publish Praestholm.Api/Praestholm.Api.csproj -c Release -o out/publish
 
       - name: Copy frontend into publish wwwroot
-        run: |
-          rm -rf out/publish/wwwroot/*
-          cp -R client/dist/* out/publish/wwwroot/
+          run: |
+            mkdir -p out/publish/wwwroot
+            rm -rf out/publish/wwwroot/*
+            cp -R client/dist/* out/publish/wwwroot/
 
       - name: Deploy via FTPS
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
