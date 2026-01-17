@@ -13,7 +13,7 @@ export default function AboutPage() {
                 extensively with distributed systems, automation, and system interfaces,
                 where I have been collaborating closely with developers, stakeholders,
                 and project teams. I strive to become the best at what I do and therefore
-                want to contentiously learn as much as possible about software.
+                want to continuously learn as much as possible about software.
             </p>
         </div>
     );
