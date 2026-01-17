@@ -11,7 +11,7 @@ export default function ContactPage() {
                     Email: oskar.svendborg@gmail.com
                 </p>
                 <p style={{ marginTop: 8, marginBottom: 0 }}>
-                   Test
+                   
                 </p>
             </div>
         </div>
