@@ -28,9 +28,10 @@ jobs:
         with:
           dotnet-version: "8.0.x"
 
-      - name: Publish API
+      - name: Publish API (self-contained)
         run: |
-          dotnet publish Praestholm.Api/Praestholm.Api.csproj -c Release -o out/publish
+          dotnet publish Praestholm.Api/Praestholm.Api.csproj -c Release -r win-x86 --self-contained true -o out/publish
+
 
       - name: Copy frontend into publish wwwroot
         run: |
