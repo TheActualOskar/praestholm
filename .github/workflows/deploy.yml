@@ -48,3 +48,5 @@ jobs:
           protocol: ftps
           local-dir: out/publish/
           server-dir: ${{ secrets.FTP_REMOTE_DIR }}
+          state-name: .ftp-deploy-sync-state.json
+          log-level: minimal
