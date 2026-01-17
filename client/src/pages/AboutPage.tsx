@@ -1,7 +1,7 @@
 export default function AboutPage() {
     return (
         <div style={{ maxWidth: 900, margin: "0 auto", padding: "48px 18px" }}>
-            <h1 style={{ margin: 0, fontSize: 34 }}>About MeS</h1>
+            <h1 style={{ margin: 0, fontSize: 34 }}>About Me</h1>
             <p style={{ marginTop: 14, opacity: 0.85, lineHeight: 1.6 }}>
                 Software Engineer with experience in C#/.NET and building robust, 
                 system-oriented software solutions. I have hands-on experience developing

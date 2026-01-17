@@ -26,8 +26,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// Optional on Simply
+// app.UseHttpsRedirection();
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 app.MapProjectsEndpoints();
+
+app.MapFallbackToFile("index.html");
 
 app.Run();
