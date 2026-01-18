@@ -27,7 +27,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // Optional on Simply
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
