@@ -1,0 +1,187 @@
+.Aboutpage {
+    position: relative;
+    min-height: calc(100vh - 72px);
+    padding: 56px 18px;
+}
+
+.Aboutpage__overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+            900px 500px at 50% 25%,
+            rgba(0, 0, 0, 0.25),
+            rgba(0, 0, 0, 0.75)
+    );
+    pointer-events: none;
+}
+
+.Aboutpage__container {
+    position: relative;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* Header */
+.Aboutpage__header {
+    text-align: center;
+    margin-bottom: 34px;
+}
+
+.Aboutpage__title {
+    margin: 0;
+    font-size: 52px;
+    letter-spacing: -0.6px;
+    color: rgba(255, 255, 255, 0.92);
+    font-weight: 800;
+}
+
+.Aboutpage__titleAccent {
+    color: var(--accent, #46d6c7);
+}
+
+.Aboutpage__subtitle {
+    max-width: 760px;
+    margin: 14px auto 0;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 15px;
+}
+
+/* Grid */
+.Aboutpage__grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 28px;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .Aboutpage__grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Left text */
+.Aboutpage__para {
+    margin: 0 0 14px;
+    line-height: 1.75;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 14.5px;
+    max-width: 64ch;
+}
+
+.Aboutpage__highlights {
+    margin-top: 18px;
+    display: grid;
+    gap: 14px;
+}
+
+.Aboutpage__highlight {
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+}
+
+.Aboutpage__highlightTitle {
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 10px;
+    font-size: 13px;
+}
+
+.Aboutpage__list {
+    margin: 0;
+    padding-left: 18px;
+    color: rgba(255, 255, 255, 0.66);
+    line-height: 1.7;
+    font-size: 13.5px;
+}
+
+/* Right cards */
+.Aboutpage__right {
+    display: grid;
+    gap: 14px;
+}
+
+.Aboutpage__card {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 12px;
+    align-items: center;
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+}
+
+.Aboutpage__cardIcon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: rgba(70, 214, 199, 0.1);
+    border: 1px solid rgba(70, 214, 199, 0.25);
+    font-size: 18px;
+}
+
+.Aboutpage__cardTitle {
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.Aboutpage__cardSubtitle {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 13.5px;
+    line-height: 1.5;
+}
+
+.Aboutpage__cardMeta {
+    margin-top: 6px;
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 12.5px;
+}
+
+/* CTA card */
+.Aboutpage__ctaCard {
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(70, 214, 199, 0.25);
+    background: rgba(70, 214, 199, 0.08);
+}
+
+.Aboutpage__ctaTitle {
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.92);
+    margin-bottom: 8px;
+}
+
+.Aboutpage__ctaText {
+    color: rgba(255, 255, 255, 0.66);
+    font-size: 13.5px;
+    line-height: 1.55;
+    margin-bottom: 12px;
+}
+
+.Aboutpage__ctaButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 12px;
+    background: var(--accent, #46d6c7);
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 800;
+    text-decoration: none;
+    border: 1px solid rgba(70, 214, 199, 0.3);
+}
+
+.Aboutpage__ctaButton:hover {
+    filter: brightness(1.03);
+}
