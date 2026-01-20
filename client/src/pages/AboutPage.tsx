@@ -65,7 +65,7 @@ export default function Aboutpage() {
                     <div className="Aboutpage__right">
                         <InfoCard
                             title="Core Stack"
-                            subtitle="C#/.NET • PostgreSQL • Neo4j • GitHub Actions"
+                            subtitle="C#/.NET • PostgreSQL • Python • React"
                             meta="Backend • Data • CI/CD"
                             icon="🧩"
                         />

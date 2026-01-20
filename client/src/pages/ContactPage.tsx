@@ -61,7 +61,7 @@ export default function Contactpage() {
                                     </div>
                                 </div>
                                 <div className="Contactpage__availabilityText">
-                                    Open to software engineering roles • Denmark (Sønderborg area) / Remote
+                                    Open to software engineering roles • Denmark
                                 </div>
                             </div>
                         </div>
