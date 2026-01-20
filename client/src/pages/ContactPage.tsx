@@ -1,5 +1,4 @@
 import "./ContactPage.css";
-import * as React from "react";
 
 export default function Contactpage() {
     return (
