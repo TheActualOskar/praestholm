@@ -1,0 +1,231 @@
+.Contactpage {
+    position: relative;
+    min-height: calc(100vh - 72px); /* adjust if your navbar height differs */
+    padding: 56px 18px;
+}
+
+/* Dark overlay for readability on bright star backgrounds */
+.Contactpage__overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+            900px 500px at 50% 25%,
+            rgba(0, 0, 0, 0.25),
+            rgba(0, 0, 0, 0.75)
+    );
+    pointer-events: none;
+}
+
+.Contactpage__container {
+    position: relative;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* Header */
+.Contactpage__header {
+    text-align: center;
+    margin-bottom: 34px;
+}
+
+.Contactpage__title {
+    margin: 0;
+    font-size: 52px;
+    letter-spacing: -0.6px;
+    color: rgba(255, 255, 255, 0.92);
+    font-weight: 800;
+}
+
+.Contactpage__titleAccent {
+    color: var(--accent, #46d6c7);
+}
+
+.Contactpage__subtitle {
+    max-width: 720px;
+    margin: 14px auto 0;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 15px;
+}
+
+/* Grid */
+.Contactpage__grid {
+    display: grid;
+    grid-template-columns: 1fr 1.25fr;
+    gap: 28px;
+    align-items: start;
+}
+
+@media (max-width: 860px) {
+    .Contactpage__grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Left column */
+.Contactpage__sectionTitle {
+    margin: 0 0 10px;
+    font-size: 22px;
+    color: rgba(255, 255, 255, 0.92);
+    font-weight: 800;
+}
+
+.Contactpage__sectionText {
+    margin: 0 0 18px;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.62);
+    font-size: 14px;
+    max-width: 460px;
+}
+
+.Contactpage__stack {
+    display: grid;
+    gap: 14px;
+}
+
+.Contactpage__cardLink {
+    text-decoration: none;
+    color: inherit;
+}
+
+.Contactpage__infoCard {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+}
+
+.Contactpage__cardLink:hover .Contactpage__infoCard {
+    border-color: rgba(70, 214, 199, 0.25);
+}
+
+.Contactpage__iconBox {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: rgba(70, 214, 199, 0.1);
+    border: 1px solid rgba(70, 214, 199, 0.25);
+    font-size: 16px;
+}
+
+.Contactpage__infoTitle {
+    font-size: 13px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 2px;
+}
+
+.Contactpage__infoValue {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Availability card */
+.Contactpage__availabilityCard {
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(70, 214, 199, 0.25);
+    background: rgba(70, 214, 199, 0.08);
+}
+
+.Contactpage__availabilityTop {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.Contactpage__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--accent, #46d6c7);
+    box-shadow: 0 0 0 6px rgba(70, 214, 199, 0.15);
+}
+
+.Contactpage__availabilityTitle {
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.Contactpage__availabilityText {
+    color: rgba(255, 255, 255, 0.62);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* Form card */
+.Contactpage__formCard {
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+    padding: 18px;
+}
+
+.Contactpage__field {
+    margin-bottom: 16px;
+}
+
+.Contactpage__label {
+    font-size: 12px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.78);
+    margin-bottom: 8px;
+}
+
+.Contactpage__input,
+.Contactpage__textarea {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.2);
+    color: rgba(255, 255, 255, 0.9);
+    outline: none;
+}
+
+.Contactpage__input {
+    height: 42px;
+    padding: 0 14px;
+}
+
+.Contactpage__textarea {
+    padding: 12px 14px;
+    resize: vertical;
+}
+
+.Contactpage__input:focus,
+.Contactpage__textarea:focus {
+    border-color: rgba(70, 214, 199, 0.35);
+}
+
+/* Submit button */
+.Contactpage__button {
+    width: 100%;
+    height: 46px;
+    border-radius: 12px;
+    border: 1px solid rgba(70, 214, 199, 0.3);
+    background: var(--accent, #46d6c7);
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.Contactpage__button:hover {
+    filter: brightness(1.03);
+}
+
+.Contactpage__buttonIcon {
+    display: inline-block;
+}
