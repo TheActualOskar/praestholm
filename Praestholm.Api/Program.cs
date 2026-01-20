@@ -26,7 +26,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Optional on Simply
+
 app.UseHttpsRedirection();
 
 app.UseDefaultFiles();

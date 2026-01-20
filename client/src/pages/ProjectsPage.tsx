@@ -1,13 +1,22 @@
+import "./ProjectsPage.css";
 import ProjectsSection from "../components/ProjectsSection";
 
 export default function ProjectsPage() {
     return (
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 18px" }}>
-            <h1 style={{ margin: 0, fontSize: 34 }}>Projects</h1>
-            <p>Here is all my projects that I have public on github. There are a few interesting projects that will sadly not be avaliable as they will have to remain private.</p>
-            <ProjectsSection/>
-            
-         
+        <div className="Projectspage">
+            <div className="Projectspage__overlay" />
+
+            <div className="Projectspage__container">
+                <header className="Projectspage__header">
+                    <h1 className="Projectspage__title">Projects</h1>
+                    <p className="Projectspage__subtitle">
+                        Selected work from GitHub. Some projects (coursework, client work, or exam-related)
+                        are private, but I’m happy to discuss them on request.
+                    </p>
+                </header>
+
+                <ProjectsSection />
+            </div>
         </div>
     );
 }
