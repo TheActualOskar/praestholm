@@ -6,6 +6,7 @@ export type Project = {
     stars: number;
     forks: number;
     language: string;
+    topLanguages: string[];
     updatedAt: string;
     isFeatured: boolean;
 };
