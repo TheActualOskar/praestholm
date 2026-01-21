@@ -21,6 +21,7 @@ public record ProjectDto(
     int stars,
     int forks,
     string language,
+    IReadOnlyList<string> topLanguages,
     string updatedAt,
     bool isFeatured
 );
