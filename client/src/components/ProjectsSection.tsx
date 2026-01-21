@@ -23,7 +23,13 @@ function ProjectCard({ p }: { p: Project }) {
     const pills = useMemo(() => {
         const list: string[] = [];
         if (p.isFeatured) list.push("Featured");
-        if (p.language) list.push(p.language);
+        
+        if (p.topLanguages?.length) {
+            list.push(...p.topLanguages.slice(0, 3));
+        } else if (p.language) {
+            list.push(p.language);
+        }
+        
         list.push(`★ ${p.stars}`);
         list.push(`⑂ ${p.forks}`);
         return list;
