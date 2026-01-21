@@ -97,10 +97,16 @@ export default function FeaturedProjectsSection() {
                             )}
 
                             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
-                                {p.language && <Pill>{p.language}</Pill>}
+                                {p.topLanguages?.length
+                                    ? p.topLanguages.slice(0, 3).map((lang) => <Pill key={lang}>{lang}</Pill>)
+                                    : p.language
+                                        ? <Pill>{p.language}</Pill>
+                                        : null}
+
                                 <Pill>★ {p.stars}</Pill>
                                 <Pill>⑂ {p.forks}</Pill>
                             </div>
+
                         </a>
                     ))}
                 </div>
