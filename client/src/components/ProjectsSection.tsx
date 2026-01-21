@@ -22,7 +22,6 @@ function Pill({ children }: { children: React.ReactNode }) {
 function ProjectCard({ p }: { p: Project }) {
     const pills = useMemo(() => {
         const list: string[] = [];
-        if (p.isFeatured) list.push("Featured");
         
         if (p.topLanguages?.length) {
             list.push(...p.topLanguages.slice(0, 3));
