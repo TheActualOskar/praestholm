@@ -70,19 +70,70 @@ public sealed class GitHubProjectsService
 
             var items = portfolio?.Items ?? new List<GithubRepoItem>();
 
-            var results = items.Select(r => new ProjectDto(
-                title: r.Name ?? "",
-                repo: r.Name ?? "",
-                htmlUrl: r.Html_Url ?? "",
-                description: r.Description ?? "",
-                stars: r.Stargazers_Count,
-                forks: r.Forks_Count,
-                language: r.Language ?? "",
-                updatedAt: r.Updated_At ?? "",
-                isFeatured: !string.IsNullOrWhiteSpace(r.Full_Name) && featuredSet.Contains(r.Full_Name)
-            )).ToList();
+            // Fetch top 3 languages per repo (by bytes), with a concurrency limit
+            using var sem = new SemaphoreSlim(6);
 
+            var tasks = items.Select(async r =>
+            {
+                await sem.WaitAsync(ct);
+                try
+                {
+                    var repoName = r.Name ?? "";
+
+                    var topLangs = string.IsNullOrWhiteSpace(repoName)
+                        ? Array.Empty<string>()
+                        : await GetTopLanguagesAsync(client, user, repoName, ct);
+
+                    return new ProjectDto(
+                        title: r.Name ?? "",
+                        repo: r.Name ?? "",
+                        htmlUrl: r.Html_Url ?? "",
+                        description: r.Description ?? "",
+                        stars: r.Stargazers_Count,
+                        forks: r.Forks_Count,
+                        language: r.Language ?? "",
+                        topLanguages: topLangs,
+                        updatedAt: r.Updated_At ?? "",
+                        isFeatured: !string.IsNullOrWhiteSpace(r.Full_Name) && featuredSet.Contains(r.Full_Name)
+                    );
+                }
+                finally
+                {
+                    sem.Release();
+                }
+            });
+
+            var results = (await Task.WhenAll(tasks)).ToList();
             return (IReadOnlyList<ProjectDto>)results;
         }) ?? Array.Empty<ProjectDto>();
+    }
+
+    private static async Task<IReadOnlyList<string>> GetTopLanguagesAsync(
+        HttpClient client,
+        string owner,
+        string repo,
+        CancellationToken ct)
+    {
+        var url = $"repos/{Uri.EscapeDataString(owner)}/{Uri.EscapeDataString(repo)}/languages";
+        using var resp = await client.GetAsync(url, ct);
+
+        if (!resp.IsSuccessStatusCode)
+            return Array.Empty<string>();
+
+        var json = await resp.Content.ReadAsStringAsync(ct);
+
+        var dict = JsonSerializer.Deserialize<Dictionary<string, long>>(
+            json,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+        );
+
+        if (dict is null || dict.Count == 0)
+            return Array.Empty<string>();
+
+        return dict
+            .OrderByDescending(kv => kv.Value)
+            .Take(3)
+            .Select(kv => kv.Key)
+            .ToList();
     }
 }
