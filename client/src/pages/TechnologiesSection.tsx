@@ -80,14 +80,14 @@ export default function TechnologiesSection() {
             <div className="Techpage__container">
                 {/* Header (matches About/Contact style) */}
                 <header className="Techpage__header">
-                    <h1 className="Techpage__title">
+                    <h2 className="Techpage__title">
                         Technologies <span className="Techpage__titleAccent">I Work With</span>
-                    </h1>
+                    </h2>
                     <p className="Techpage__subtitle">
                         Tools and frameworks I use to build robust systems and clean interfaces.
                     </p>
                 </header>
-
+                
                 {/* Your existing content */}
                 <section className="Techpage__content">
                     <div className="techColumns">

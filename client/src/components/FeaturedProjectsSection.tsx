@@ -29,9 +29,9 @@ export default function FeaturedProjectsSection() {
             <div className="container">
                 {/* Header (matching About/Contact style) */}
                 <header className="Featured__header">
-                    <h1 className="Featured__title">
+                    <h2 className="Featured__title">
                         Featured <span className="Featured__titleAccent">Work</span>
-                    </h1>
+                    </h2>
 
                   
 
