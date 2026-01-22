@@ -1,3 +1,5 @@
+import "./TechnologiesSection.css";
+
 type TechItem = { name: string; iconSrc: string };
 
 function TechCard({ name, iconSrc }: TechItem) {
@@ -8,10 +10,7 @@ function TechCard({ name, iconSrc }: TechItem) {
             </div>
             <div className="techLabel">{name}</div>
         </div>
-        
-        
     );
-    
 }
 
 export default function TechnologiesSection() {
@@ -25,7 +24,6 @@ export default function TechnologiesSection() {
                 { name: "C", iconSrc: "/tech/languages/c.svg" },
                 { name: "Bash", iconSrc: "/tech/languages/bash.svg" },
                 { name: "PHP", iconSrc: "/tech/languages/PHP.svg" },
-                
             ],
         },
         {
@@ -37,7 +35,6 @@ export default function TechnologiesSection() {
                 { name: "JavaScript", iconSrc: "/tech/languages/javascript.svg" },
                 { name: "HTML", iconSrc: "/tech/frontend/html5.svg" },
                 { name: "CSS", iconSrc: "/tech/frontend/css.svg" },
-                
             ],
         },
         {
@@ -77,36 +74,37 @@ export default function TechnologiesSection() {
     ];
 
     return (
-        <section className="section">
-            <div className="container">
-                <h2 className="techHeading">
-                    <span style={{ color: "var(--accent2)" }}>Technologies</span> I Work With
-                </h2>
+        <div className="Techpage">
+            <div className="Techpage__overlay" />
 
-                <p className="techSubheading">
-                    Tools and frameworks I use to build robust systems and clean interfaces.
-                </p>
+            <div className="Techpage__container">
+                {/* Header (matches About/Contact style) */}
+                <header className="Techpage__header">
+                    <h1 className="Techpage__title">
+                        Technologies <span className="Techpage__titleAccent">I Work With</span>
+                    </h1>
+                    <p className="Techpage__subtitle">
+                        Tools and frameworks I use to build robust systems and clean interfaces.
+                    </p>
+                </header>
 
-                <div className="techColumns">
-                    {columns.map((col) => (
-                        <div key={col.title}>
-                            <div className="techColumnTitle">{col.title}</div>
+                {/* Your existing content */}
+                <section className="Techpage__content">
+                    <div className="techColumns">
+                        {columns.map((col) => (
+                            <div key={col.title}>
+                                <div className="techColumnTitle">{col.title}</div>
 
-                            <div className="techCardsGrid">
-                                {col.items.map((t) => (
-                                    <TechCard key={t.name} {...t} />
-                                ))}
+                                <div className="techCardsGrid">
+                                    {col.items.map((t) => (
+                                        <TechCard key={t.name} {...t} />
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                </section>
             </div>
-            
-        </section>
-     
-     
-     
-     
-        
+        </div>
     );
 }
