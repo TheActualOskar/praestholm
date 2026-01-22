@@ -2,6 +2,8 @@ import * as React from "react";
 import { useEffect, useMemo, useState } from "react";
 import { fetchProjects, type Project } from "../api/projects";
 import "./FeaturedProjectsSection.css";
+import { Link } from "react-router-dom";
+
 
 function Pill({ children }: { children: React.ReactNode }) {
     return <span className="Pill">{children}</span>;
@@ -76,6 +78,16 @@ export default function FeaturedProjectsSection() {
                         </a>
                     ))}
                 </div>
+
+                <div className="Featured__cta">
+                    <Link to="/projects" className="Featured__button">
+                        View All Projects
+                        <span className="Featured__buttonIcon" aria-hidden>
+      →
+    </span>
+                    </Link>
+                </div>
+
             </div>
         </section>
     );
