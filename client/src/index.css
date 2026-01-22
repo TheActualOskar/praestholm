@@ -3,20 +3,30 @@
   --bg: #050812;
   --text: rgba(255, 255, 255, 0.92);
   --muted: rgba(255, 255, 255, 0.68);
-  --border: rgba(255, 255, 255, 0.12);
+
+  /* Make borders slightly cooler + softer */
+  --border: rgba(255, 255, 255, 0.10);
 
   /* Surfaces */
-  --card: rgba(255, 255, 255, 0.06);
-  --card-strong: rgba(255, 255, 255, 0.08);
+  --card: rgba(255, 255, 255, 0.055);
+  --card-strong: rgba(255, 255, 255, 0.075);
 
-  /* Accents */
-  --accent: #46d6c7;   /* teal */
-  --accent2: #8b5cf6;  /* purple */
+  /* Accents (slightly less neon, more “premium”) */
+  --accent: #38d6c8;   /* teal (slightly cooler) */
+  --accent2: #7c5cff;  /* purple (less pink, cleaner) */
+  --accent3: #22d3ee;  /* cyan (for gradients / hover tint) */
+
+  /* New helpers */
+  --border-soft: rgba(255, 255, 255, 0.08);
+  --border-accent: rgba(124, 92, 255, 0.30);
+  --glow-accent: rgba(56, 214, 200, 0.22);
+  --glow-purple: rgba(124, 92, 255, 0.22);
 
   /* Layout */
   --container: 1080px;
   --radius: 18px;
 }
+
 
 * { box-sizing: border-box; }
 
