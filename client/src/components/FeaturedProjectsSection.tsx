@@ -4,9 +4,54 @@ import { fetchProjects, type Project } from "../api/projects";
 import "./FeaturedProjectsSection.css";
 import { Link } from "react-router-dom";
 
-
 function Pill({ children }: { children: React.ReactNode }) {
     return <span className="Pill">{children}</span>;
+}
+
+function FeaturedProjectCard({ p }: { p: Project }) {
+    const pills = useMemo(() => {
+        const list: string[] = [];
+
+        if (p.topLanguages?.length) {
+            list.push(...p.topLanguages.slice(0, 3));
+        } else if (p.language) {
+            list.push(p.language);
+        }
+
+        list.push(`★ ${p.stars}`);
+        list.push(`⑂ ${p.forks}`);
+        return list;
+    }, [p]);
+
+    return (
+        <div className="ProjectCard">
+            <h3 className="ProjectCard__title">{p.title}</h3>
+
+            {p.description ? (
+                <p className="ProjectCard__desc">{p.description}</p>
+            ) : (
+                <p className="ProjectCard__desc ProjectCard__desc--muted">
+                    No description yet — add one in the GitHub repo “About” box.
+                </p>
+            )}
+
+            <div className="ProjectCard__pills">
+                {pills.map((t) => (
+                    <Pill key={t}>{t}</Pill>
+                ))}
+            </div>
+
+            <div className="ProjectCard__updated">
+                Updated {new Date(p.updatedAt).toLocaleDateString()}
+            </div>
+
+            <div className="ProjectCard__spacer" />
+
+            <a className="ProjectCard__btn" href={p.htmlUrl} target="_blank" rel="noreferrer">
+                Source code <span className="ProjectCard__btnIcon">↗</span>
+            </a>
+        </div>
+    );
 }
 
 export default function FeaturedProjectsSection() {
@@ -29,15 +74,10 @@ export default function FeaturedProjectsSection() {
     return (
         <section className="Featured">
             <div className="container">
-                {/* Header (matching About/Contact style) */}
                 <header className="Featured__header">
                     <h2 className="Featured__title">
                         Featured <span className="Featured__titleAccent">Work</span>
                     </h2>
-
-                  
-
-                    
                 </header>
 
                 {error && <div className="Featured__error">{error}</div>}
@@ -48,34 +88,7 @@ export default function FeaturedProjectsSection() {
 
                 <div className="Featured__grid">
                     {featured.map((p) => (
-                        <a
-                            key={p.htmlUrl}
-                            href={p.htmlUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="Featured__card"
-                        >
-                            <h3 className="Featured__cardTitle">{p.title}</h3>
-
-                            {p.description ? (
-                                <p className="Featured__cardText">{p.description}</p>
-                            ) : (
-                                <p className="Featured__cardText is-muted">
-                                    Add a GitHub description to make this look better.
-                                </p>
-                            )}
-
-                            <div className="Featured__meta">
-                                {p.topLanguages?.length
-                                    ? p.topLanguages.slice(0, 3).map((lang) => <Pill key={lang}>{lang}</Pill>)
-                                    : p.language
-                                        ? <Pill>{p.language}</Pill>
-                                        : null}
-
-                                <Pill>★ {p.stars}</Pill>
-                                <Pill>⑂ {p.forks}</Pill>
-                            </div>
-                        </a>
+                        <FeaturedProjectCard key={p.htmlUrl} p={p} />
                     ))}
                 </div>
 
@@ -83,11 +96,10 @@ export default function FeaturedProjectsSection() {
                     <Link to="/projects" className="Featured__button">
                         View All Projects
                         <span className="Featured__buttonIcon" aria-hidden>
-      →
-    </span>
+              →
+            </span>
                     </Link>
                 </div>
-
             </div>
         </section>
     );
