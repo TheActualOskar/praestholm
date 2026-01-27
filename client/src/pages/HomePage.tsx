@@ -1,4 +1,3 @@
-import * as React from "react";
 import TechnologiesSection from "./TechnologiesSection";
 import FeaturedProjectsSection from "../components/FeaturedProjectsSection";
 
