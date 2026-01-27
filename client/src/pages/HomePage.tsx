@@ -33,15 +33,15 @@ export default function HomePage() {
                     className="jumpArrow"
                     aria-label="Scroll down"
                     onClick={() =>
-                        document.getElementById("below-hero")?.scrollIntoView({ behavior: "smooth" })
+                        document.getElementById("technologies")?.scrollIntoView({ behavior: "smooth" })
                     }
                 >
-                    <span className="jumpArrowIcon" aria-hidden>
-                        ↓
-                    </span>
+                    <span className="jumpArrowIcon" aria-hidden>↓</span>
                 </button>
             </section>
 
+
+            <div id="technologies" />
             <TechnologiesSection />
             <FeaturedProjectsSection />
         </>
