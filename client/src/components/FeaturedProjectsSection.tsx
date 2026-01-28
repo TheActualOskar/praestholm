@@ -78,6 +78,8 @@ export default function FeaturedProjectsSection() {
                     <h2 className="Featured__title">
                         Featured <span className="Featured__titleAccent">Work</span>
                     </h2>
+
+                    <p>Here is a selection of my full-stack development and some of the work that I'm extra proud off</p>
                 </header>
 
                 {error && <div className="Featured__error">{error}</div>}
