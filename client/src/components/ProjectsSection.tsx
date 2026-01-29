@@ -88,11 +88,12 @@ function ProjectCard({ p }: { p: Project }) {
                     ))}
                 </div>
 
+                {/* MOVE SPACER UP so footer/actions stay at bottom */}
+                <div className="ProjectCard__spacer" />
+
                 <div className="ProjectCard__meta">
                     Updated {new Date(p.updatedAt).toLocaleDateString()}
                 </div>
-
-                <div className="ProjectCard__spacer" />
 
                 <div className="ProjectCard__actions">
                     {liveDemo && (
@@ -116,6 +117,7 @@ function ProjectCard({ p }: { p: Project }) {
                     </a>
                 </div>
             </div>
+
         </article>
     );
 }
