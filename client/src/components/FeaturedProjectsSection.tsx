@@ -4,8 +4,14 @@ import { fetchProjects, type Project } from "../api/projects";
 import "./FeaturedProjectsSection.css";
 import { Link } from "react-router-dom";
 
-function Pill({ children }: { children: React.ReactNode }) {
-    return <span className="Pill">{children}</span>;
+function Pill({
+                  children,
+                  className = "",
+              }: {
+    children: React.ReactNode;
+    className?: string;
+}) {
+    return <span className={`Pill ${className}`.trim()}>{children}</span>;
 }
 
 function getRepoSlug(htmlUrl: string): string | null {
@@ -29,16 +35,19 @@ function githubOgImageUrl(htmlUrl: string): string | null {
 function FeaturedProjectCard({ p }: { p: Project }) {
     const og = githubOgImageUrl(p.htmlUrl);
 
-    const pills = useMemo(() => {
-        const list: string[] = [];
+    // Tags: languages only (like your inspiration)
+    const tags = useMemo(() => {
+        if (p.topLanguages?.length) return p.topLanguages.slice(0, 4);
+        if (p.language) return [p.language];
+        return [];
+    }, [p]);
 
-        if (p.topLanguages?.length) list.push(...p.topLanguages.slice(0, 3));
-        else if (p.language) list.push(p.language);
-
-        list.push(`★ ${p.stars}`);
-        list.push(`⑂ ${p.forks}`);
-
-        return list;
+    // Stats: shown separately (not as tags)
+    const stats = useMemo(() => {
+        return {
+            stars: p.stars ?? 0,
+            forks: p.forks ?? 0,
+        };
     }, [p]);
 
     // Optional “Live Demo” if your Project object has it
@@ -49,6 +58,12 @@ function FeaturedProjectCard({ p }: { p: Project }) {
             : typeof anyP.homepage === "string" && anyP.homepage.length > 0
                 ? anyP.homepage
                 : null;
+
+    const updatedLabel = useMemo(() => {
+        const d = new Date(p.updatedAt);
+        if (Number.isNaN(d.getTime())) return "Updated —";
+        return `Updated ${d.toLocaleDateString()}`;
+    }, [p.updatedAt]);
 
     return (
         <article className="ProjectCard">
@@ -72,7 +87,9 @@ function FeaturedProjectCard({ p }: { p: Project }) {
             <div className="ProjectCard__body">
                 <div className="ProjectCard__topRow">
                     <h3 className="ProjectCard__title">{p.title}</h3>
-                    <span className="ProjectCard__linkIcon" aria-hidden="true">↗</span>
+                    <span className="ProjectCard__linkIcon" aria-hidden="true">
+            ↗
+          </span>
                 </div>
 
                 {p.description ? (
@@ -83,39 +100,47 @@ function FeaturedProjectCard({ p }: { p: Project }) {
                     </p>
                 )}
 
-                <div className="ProjectCard__pills">
-                    {pills.map((t) => (
+                {/* Tags row */}
+                <div className="ProjectCard__tags">
+                    {tags.map((t) => (
                         <Pill key={t}>{t}</Pill>
                     ))}
+                    {p.topLanguages && p.topLanguages.length > 4 && (
+                        <Pill className="Pill--more">+{p.topLanguages.length - 4} more</Pill>
+                    )}
                 </div>
 
-                <div className="ProjectCard__meta">
-                    Updated {new Date(p.updatedAt).toLocaleDateString()}
-                </div>
-
+                {/* THIS spacer must be BEFORE footer+actions */}
                 <div className="ProjectCard__spacer" />
 
+                {/* Footer row */}
+                <div className="ProjectCard__footer">
+                    <div className="ProjectCard__stats" aria-label="Repository stats">
+    <span className="Stat">
+      <span className="Stat__icon" aria-hidden="true">★</span>
+      <span className="Stat__value">{stats.stars}</span>
+    </span>
+                        <span className="Stat">
+      <span className="Stat__icon" aria-hidden="true">⑂</span>
+      <span className="Stat__value">{stats.forks}</span>
+    </span>
+                    </div>
+
+                    <div className="ProjectCard__updated">{updatedLabel}</div>
+                </div>
+
+                {/* Actions */}
                 <div className="ProjectCard__actions">
                     {liveDemo && (
-                        <a
-                            className="ProjectCard__actionLink"
-                            href={liveDemo}
-                            target="_blank"
-                            rel="noreferrer"
-                        >
+                        <a className="ProjectCard__actionLink" href={liveDemo} target="_blank" rel="noreferrer">
                             Live Demo <span className="ProjectCard__btnIcon">↗</span>
                         </a>
                     )}
-
-                    <a
-                        className="ProjectCard__actionLink"
-                        href={p.htmlUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                    >
+                    <a className="ProjectCard__actionLink" href={p.htmlUrl} target="_blank" rel="noreferrer">
                         Source Code <span className="ProjectCard__btnIcon">↗</span>
                     </a>
                 </div>
+
             </div>
         </article>
     );
