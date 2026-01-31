@@ -9,6 +9,7 @@ export type Project = {
     topLanguages: string[];
     updatedAt: string;
     isFeatured: boolean;
+    imageUrl?: string | null;
 };
 
 export async function fetchProjects(): Promise<Project[]> {
