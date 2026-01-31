@@ -26,7 +26,8 @@ function githubOgImageUrl(htmlUrl: string): string | null {
 }
 
 function ProjectCard({ p }: { p: Project }) {
-    const og = githubOgImageUrl(p.htmlUrl);
+    const imgSrc = p.imageUrl || githubOgImageUrl(p.htmlUrl);
+
 
     const pills = useMemo(() => {
         const list: string[] = [];
@@ -52,10 +53,10 @@ function ProjectCard({ p }: { p: Project }) {
     return (
         <article className="ProjectCard">
             <div className="ProjectCard__media">
-                {og ? (
+                {imgSrc ? (
                     <img
                         className="ProjectCard__img"
-                        src={og}
+                        src={imgSrc}
                         alt={`${p.title} preview`}
                         loading="lazy"
                     />
