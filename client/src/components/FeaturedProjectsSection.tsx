@@ -33,16 +33,17 @@ function githubOgImageUrl(htmlUrl: string): string | null {
 }
 
 function FeaturedProjectCard({ p }: { p: Project }) {
-    const og = githubOgImageUrl(p.htmlUrl);
+    
+    const imgSrc = p.imageUrl || githubOgImageUrl(p.htmlUrl);
 
-    // Tags: languages only (like your inspiration)
+   
     const tags = useMemo(() => {
         if (p.topLanguages?.length) return p.topLanguages.slice(0, 4);
         if (p.language) return [p.language];
         return [];
     }, [p]);
 
-    // Stats: shown separately (not as tags)
+    
     const stats = useMemo(() => {
         return {
             stars: p.stars ?? 0,
@@ -50,7 +51,7 @@ function FeaturedProjectCard({ p }: { p: Project }) {
         };
     }, [p]);
 
-    // Optional “Live Demo” if your Project object has it
+    
     const anyP = p as any;
     const liveDemo: string | null =
         typeof anyP.homepageUrl === "string" && anyP.homepageUrl.length > 0
@@ -68,10 +69,10 @@ function FeaturedProjectCard({ p }: { p: Project }) {
     return (
         <article className="ProjectCard">
             <div className="ProjectCard__media">
-                {og ? (
+                {imgSrc ? (
                     <img
                         className="ProjectCard__img"
-                        src={og}
+                        src={imgSrc}
                         alt={`${p.title} preview`}
                         loading="lazy"
                     />
@@ -116,14 +117,14 @@ function FeaturedProjectCard({ p }: { p: Project }) {
                 {/* Footer row */}
                 <div className="ProjectCard__footer">
                     <div className="ProjectCard__stats" aria-label="Repository stats">
-    <span className="Stat">
-      <span className="Stat__icon" aria-hidden="true">★</span>
-      <span className="Stat__value">{stats.stars}</span>
-    </span>
+            <span className="Stat">
+              <span className="Stat__icon" aria-hidden="true">★</span>
+              <span className="Stat__value">{stats.stars}</span>
+            </span>
                         <span className="Stat">
-      <span className="Stat__icon" aria-hidden="true">⑂</span>
-      <span className="Stat__value">{stats.forks}</span>
-    </span>
+              <span className="Stat__icon" aria-hidden="true">⑂</span>
+              <span className="Stat__value">{stats.forks}</span>
+            </span>
                     </div>
 
                     <div className="ProjectCard__updated">{updatedLabel}</div>
@@ -140,7 +141,6 @@ function FeaturedProjectCard({ p }: { p: Project }) {
                         Source Code <span className="ProjectCard__btnIcon">↗</span>
                     </a>
                 </div>
-
             </div>
         </article>
     );

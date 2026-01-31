@@ -41,7 +41,7 @@ function ProjectCard({ p }: { p: Project }) {
         return list;
     }, [p]);
 
-    // Optional “Live Demo” if your Project has one. (Keeps it safe if not.)
+    
     const anyP = p as any;
     const liveDemo: string | null =
         typeof anyP.homepageUrl === "string" && anyP.homepageUrl.length > 0
