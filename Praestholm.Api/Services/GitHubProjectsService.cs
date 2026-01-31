@@ -28,7 +28,8 @@ public sealed class GitHubProjectsService
         if (string.IsNullOrWhiteSpace(user))
             throw new InvalidOperationException("GitHub:User is missing in configuration.");
 
-        return await _cache.GetOrCreateAsync("projects_v1", async entry =>
+        // bump cache key because DTO shape changed (imageUrl)
+        return await _cache.GetOrCreateAsync("projects_v2", async entry =>
         {
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(cacheMinutes);
 
@@ -70,7 +71,7 @@ public sealed class GitHubProjectsService
 
             var items = portfolio?.Items ?? new List<GithubRepoItem>();
 
-            // Fetch top 3 languages per repo (by bytes), with a concurrency limit
+            // Fetch top 3 languages + resolve image url per repo, with a concurrency limit
             using var sem = new SemaphoreSlim(6);
 
             var tasks = items.Select(async r =>
@@ -84,9 +85,14 @@ public sealed class GitHubProjectsService
                         ? Array.Empty<string>()
                         : await GetTopLanguagesAsync(client, user, repoName, ct);
 
+                    // resolves to .github/cover.png if present, else OG image
+                    var imageUrl = await ResolveImageUrlAsync(client, r, ct);
+
+                    var repoSlug = r.Full_Name ?? repoName; // prefer "owner/repo"
+
                     return new ProjectDto(
                         title: r.Name ?? "",
-                        repo: r.Name ?? "",
+                        repo: repoSlug,
                         htmlUrl: r.Html_Url ?? "",
                         description: r.Description ?? "",
                         stars: r.Stargazers_Count,
@@ -94,7 +100,8 @@ public sealed class GitHubProjectsService
                         language: r.Language ?? "",
                         topLanguages: topLangs,
                         updatedAt: r.Updated_At ?? "",
-                        isFeatured: !string.IsNullOrWhiteSpace(r.Full_Name) && featuredSet.Contains(r.Full_Name)
+                        isFeatured: !string.IsNullOrWhiteSpace(r.Full_Name) && featuredSet.Contains(r.Full_Name),
+                        imageUrl: imageUrl
                     );
                 }
                 finally
@@ -135,5 +142,35 @@ public sealed class GitHubProjectsService
             .Take(3)
             .Select(kv => kv.Key)
             .ToList();
+    }
+
+    // Convention: each repo can include a cover at .github/cover.png.
+    // If it exists, use it. Otherwise fallback to GitHub OpenGraph image.
+    private static async Task<string?> ResolveImageUrlAsync(HttpClient client, GithubRepoItem r, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(r.Full_Name))
+            return null;
+
+        var full = r.Full_Name; // "owner/repo"
+
+        // Try main and master to avoid relying on default_branch field (not in search result)
+        var candidates = new[]
+        {
+            $"https://raw.githubusercontent.com/{full}/main/.github/cover.png",
+            $"https://raw.githubusercontent.com/{full}/master/.github/cover.png",
+        };
+
+        foreach (var url in candidates)
+        {
+            // HEAD is cheaper than GET; GitHub raw supports it.
+            using var req = new HttpRequestMessage(HttpMethod.Head, url);
+            using var resp = await client.SendAsync(req, ct);
+
+            if (resp.IsSuccessStatusCode)
+                return url;
+        }
+
+        // Fallback: always available
+        return $"https://opengraph.githubassets.com/1/{full}";
     }
 }
