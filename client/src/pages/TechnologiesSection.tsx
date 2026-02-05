@@ -73,6 +73,8 @@ export default function TechnologiesSection() {
         },
     ];
 
+    
+    
     return (
         <div className="Techpage">
             <div className="Techpage__overlay" />
@@ -104,6 +106,20 @@ export default function TechnologiesSection() {
                         ))}
                     </div>
                 </section>
+                <div className="techFooterAction">
+                    <button
+                        type="button"
+                        className="jumpArrow"
+                        aria-label="Scroll to featured projects"
+                        onClick={() =>
+                            document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })
+                        }
+                    >
+          <span className="jumpArrowIcon" aria-hidden>
+            ↓
+          </span>
+                    </button>
+                </div>
             </div>
         </div>
     );
