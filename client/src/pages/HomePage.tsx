@@ -42,6 +42,8 @@ export default function HomePage() {
 
             <div id="technologies" />
             <TechnologiesSection />
+
+            <div id="projects" />
             <FeaturedProjectsSection />
         </>
     );
