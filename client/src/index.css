@@ -517,7 +517,7 @@ p { color: var(--muted); line-height: 1.65; }
    ========================================= */
 
 .jumpArrow {
-  margin-top: 26px;
+  margin-bottom: 300px;
   width: 46px;
   height: 46px;
   border-radius: 999px;
