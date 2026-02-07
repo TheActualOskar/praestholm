@@ -42,13 +42,10 @@ function ProjectCard({ p }: { p: Project }) {
     }, [p]);
 
     
-    const anyP = p as any;
     const liveDemo: string | null =
-        typeof anyP.homepageUrl === "string" && anyP.homepageUrl.length > 0
-            ? anyP.homepageUrl
-            : typeof anyP.homepage === "string" && anyP.homepage.length > 0
-                ? anyP.homepage
-                : null;
+        typeof p.homepageUrl === "string" && p.homepageUrl.length > 0
+            ? p.homepageUrl
+            : null;
 
     return (
         <article className="ProjectCard">
