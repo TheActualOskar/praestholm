@@ -10,6 +10,7 @@ export type Project = {
     updatedAt: string;
     isFeatured: boolean;
     imageUrl?: string | null;
+    homepageUrl?: string | null;
 };
 
 export async function fetchProjects(): Promise<Project[]> {
