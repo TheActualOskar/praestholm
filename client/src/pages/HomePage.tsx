@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import TechnologiesSection from "./TechnologiesSection";
 import FeaturedProjectsSection from "../components/FeaturedProjectsSection";
 
@@ -15,15 +16,15 @@ export default function HomePage() {
                     </div>
 
                     <div className="heroCtas">
-                        <a className="heroBtn primary" href="/projects">
+                        <Link className="heroBtn primary" to="/projects">
                             Projects
-                        </a>
-                        <a className="heroBtn" href="/about">
+                        </Link>
+                        <Link className="heroBtn" to="/about">
                             About
-                        </a>
-                        <a className="heroBtn" href="/contact">
+                        </Link>
+                        <Link className="heroBtn" to="/contact">
                             Contact
-                        </a>
+                        </Link>
                     </div>
                 </div>
 
