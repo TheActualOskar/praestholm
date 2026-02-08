@@ -10,10 +10,6 @@
     border-radius: 12px;
 }
 
-.ProjectsSection__loading {
-    color: rgba(255, 255, 255, 0.75);
-}
-
 /* Grid */
 .ProjectsGrid {
     margin-top: 18px;
@@ -118,19 +114,6 @@
 }
 
 .ProjectCard__desc--muted {
-    color: rgba(255, 255, 255, 0.55);
-}
-
-.ProjectCard__pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 12px;
-}
-
-.ProjectCard__meta {
-    margin-top: 12px;
-    font-size: 12px;
     color: rgba(255, 255, 255, 0.55);
 }
 
