@@ -56,6 +56,14 @@ function IconLink({
                 e.currentTarget.style.opacity = "0.85";
                 e.currentTarget.style.background = "transparent";
             }}
+            onFocus={(e) => {
+                e.currentTarget.style.opacity = "1";
+                e.currentTarget.style.background = "rgba(255,255,255,0.10)";
+            }}
+            onBlur={(e) => {
+                e.currentTarget.style.opacity = "0.85";
+                e.currentTarget.style.background = "transparent";
+            }}
         >
             {children}
         </a>
