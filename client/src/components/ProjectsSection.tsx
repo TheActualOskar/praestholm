@@ -5,12 +5,14 @@ import "./ProjectsSection.css";
 
 export default function ProjectsSection() {
     const [projects, setProjects] = useState<Project[]>([]);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         fetchProjects()
             .then(setProjects)
-            .catch((e) => setError(e instanceof Error ? e.message : "Failed to load projects"));
+            .catch((e) => setError(e instanceof Error ? e.message : "Failed to load projects"))
+            .finally(() => setLoading(false));
     }, []);
 
     const sorted = useMemo(() => {
@@ -24,8 +26,11 @@ export default function ProjectsSection() {
         <section className="ProjectsSection">
             {error && <div className="ProjectsSection__error">{error}</div>}
 
-            {!error && sorted.length === 0 && (
-                <div className="ProjectsSection__loading">Loading…</div>
+            {!error && loading && (
+                <div className="spinner">
+                    <div className="spinner__circle" />
+                    Loading projects…
+                </div>
             )}
 
             <div className="ProjectsGrid">
