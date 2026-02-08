@@ -6,12 +6,14 @@ import "./FeaturedProjectsSection.css";
 
 export default function FeaturedProjectsSection() {
     const [projects, setProjects] = useState<Project[]>([]);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         fetchProjects()
             .then(setProjects)
-            .catch((e) => setError(e instanceof Error ? e.message : "Failed to load projects"));
+            .catch((e) => setError(e instanceof Error ? e.message : "Failed to load projects"))
+            .finally(() => setLoading(false));
     }, []);
 
     const featured = useMemo(() => {
@@ -36,7 +38,14 @@ export default function FeaturedProjectsSection() {
 
                 {error && <div className="Featured__error">{error}</div>}
 
-                {!error && featured.length === 0 && (
+                {!error && loading && (
+                    <div className="spinner">
+                        <div className="spinner__circle" />
+                        Loading projects…
+                    </div>
+                )}
+
+                {!error && !loading && featured.length === 0 && (
                     <div className="Featured__empty">No featured projects yet.</div>
                 )}
 
