@@ -31,6 +31,17 @@ jobs:
         with:
           dotnet-version: "8.0.x"
 
+      - name: Inject connection string
+        run: |
+          cd Praestholm.Api
+          cat <<EOF > appsettings.Production.json
+          {
+            "ConnectionStrings": {
+              "Blog": "${{ secrets.BLOG_CONNECTION_STRING }}"
+            }
+          }
+          EOF
+
       - name: Publish API (self-contained)
         run: |
           dotnet publish Praestholm.Api/Praestholm.Api.csproj -c Release -r win-x86 --self-contained true -o out/publish
