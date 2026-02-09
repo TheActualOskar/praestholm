@@ -176,6 +176,7 @@ export default function Header() {
                     <div className="header-desktop">
                         <nav style={{ display: "flex", gap: 6 }}>
                             <NavItem to="/projects" label="Projects" />
+                            <NavItem to="/blog" label="Blog" />
                             <NavItem to="/about" label="About" />
                             <NavItem to="/contact" label="Contact" />
                         </nav>
@@ -225,6 +226,9 @@ export default function Header() {
                 <nav style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
                     <NavLink to="/projects" className={({ isActive }) => `mobile-nav-link${isActive ? " active" : ""}`}>
                         Projects
+                    </NavLink>
+                    <NavLink to="/blog" className={({ isActive }) => `mobile-nav-link${isActive ? " active" : ""}`}>
+                        Blog
                     </NavLink>
                     <NavLink to="/about" className={({ isActive }) => `mobile-nav-link${isActive ? " active" : ""}`}>
                         About
