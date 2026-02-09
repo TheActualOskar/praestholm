@@ -1,4 +1,5 @@
-import { NavLink } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 
 function NavItem({ to, label }: { to: string; label: string }) {
     return (
@@ -41,7 +42,7 @@ function IconLink({
                 display: "inline-flex",
                 alignItems: "center",
                 justifyContent: "center",
-                width: 40,            
+                width: 40,
                 height: 40,
                 borderRadius: 12,
                 color: "white",
@@ -79,7 +80,7 @@ function LinkedInIcon() {
                 fontWeight: 800,
                 lineHeight: 1,
                 letterSpacing: -0.6,
-                transform: "translateY(-1px)", 
+                transform: "translateY(-1px)",
             }}
         >
       in
@@ -103,70 +104,145 @@ function GitHubIcon() {
     );
 }
 
-export default function Header() {
+function HamburgerIcon() {
     return (
-        <header
-            style={{
-                position: "sticky",
-                top: 0,
-                zIndex: 30,
-                background: "linear-gradient(to bottom, #111 0%, #1b1b1b 55%, #111 100%)",
-                borderBottom: "1px solid rgba(255,255,255,0.08)",
-                boxShadow: "0 10px 30px rgba(0,0,0,0.35)",
-            }}
-        >
-            <div
-                className="container"
+        <svg width="22" height="18" viewBox="0 0 22 18" fill="none" aria-hidden="true">
+            <rect y="0" width="22" height="2" rx="1" fill="currentColor" />
+            <rect y="8" width="22" height="2" rx="1" fill="currentColor" />
+            <rect y="16" width="22" height="2" rx="1" fill="currentColor" />
+        </svg>
+    );
+}
+
+function CloseIcon() {
+    return (
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+            <path d="M2 2L20 20M20 2L2 20" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+        </svg>
+    );
+}
+
+export default function Header() {
+    const [menuOpen, setMenuOpen] = useState(false);
+    const location = useLocation();
+
+    // Close menu on route change
+    useEffect(() => {
+        setMenuOpen(false);
+    }, [location.pathname]);
+
+    // Lock body scroll while menu is open
+    useEffect(() => {
+        document.body.style.overflow = menuOpen ? "hidden" : "";
+        return () => { document.body.style.overflow = ""; };
+    }, [menuOpen]);
+
+    return (
+        <>
+            <header
                 style={{
-                    height: 64,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: 14,
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 30,
+                    background: "linear-gradient(to bottom, #111 0%, #1b1b1b 55%, #111 100%)",
+                    borderBottom: "1px solid rgba(255,255,255,0.08)",
+                    boxShadow: "0 10px 30px rgba(0,0,0,0.35)",
                 }}
             >
-                {/* Brand */}
-                <NavLink
-                    to="/"
+                <div
+                    className="container"
                     style={{
-                        fontWeight: 800,
-                        letterSpacing: 0.2,
-                        color: "white",
-                        fontSize: 16,
+                        height: 64,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: 14,
                     }}
                 >
-                    Praestholm
-                </NavLink>
-
-                {/* Right side: nav + icons */}
-                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <nav style={{ display: "flex", gap: 6 }}>
-                        <NavItem to="/projects" label="Projects" />
-                        <NavItem to="/about" label="About" />
-                        <NavItem to="/contact" label="Contact" />
-                    </nav>
-
-                    <div
+                    {/* Brand */}
+                    <NavLink
+                        to="/"
                         style={{
-                            width: 1,
-                            height: 22,
-                            background: "rgba(255,255,255,0.15)",
-                            marginLeft: 6,
-                            marginRight: 2,
+                            fontWeight: 800,
+                            letterSpacing: 0.2,
+                            color: "white",
+                            fontSize: 16,
                         }}
-                    />
+                    >
+                        Praestholm
+                    </NavLink>
 
-                    <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                        
-                        <IconLink href="https://www.linkedin.com/in/oskarpraestholm" label="LinkedIn">
-                            <LinkedInIcon />
-                        </IconLink>
-                        <IconLink href="https://github.com/TheActualOskar" label="GitHub">
-                            <GitHubIcon />
-                        </IconLink>
+                    {/* Desktop: nav + icons */}
+                    <div className="header-desktop">
+                        <nav style={{ display: "flex", gap: 6 }}>
+                            <NavItem to="/projects" label="Projects" />
+                            <NavItem to="/about" label="About" />
+                            <NavItem to="/contact" label="Contact" />
+                        </nav>
+
+                        <div
+                            style={{
+                                width: 1,
+                                height: 22,
+                                background: "rgba(255,255,255,0.15)",
+                                marginLeft: 6,
+                                marginRight: 2,
+                            }}
+                        />
+
+                        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                            <IconLink href="https://www.linkedin.com/in/oskarpraestholm" label="LinkedIn">
+                                <LinkedInIcon />
+                            </IconLink>
+                            <IconLink href="https://github.com/TheActualOskar" label="GitHub">
+                                <GitHubIcon />
+                            </IconLink>
+                        </div>
                     </div>
+
+                    {/* Mobile hamburger */}
+                    <button
+                        className="hamburger-btn"
+                        onClick={() => setMenuOpen(!menuOpen)}
+                        aria-label={menuOpen ? "Close menu" : "Open menu"}
+                        aria-expanded={menuOpen}
+                    >
+                        <HamburgerIcon />
+                    </button>
+                </div>
+            </header>
+
+            {/* Mobile nav overlay */}
+            <div className={`mobile-nav-overlay${menuOpen ? " open" : ""}`}>
+                <button
+                    className="hamburger-btn mobile-nav-close"
+                    onClick={() => setMenuOpen(false)}
+                    aria-label="Close menu"
+                >
+                    <CloseIcon />
+                </button>
+
+                <nav style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+                    <NavLink to="/projects" className={({ isActive }) => `mobile-nav-link${isActive ? " active" : ""}`}>
+                        Projects
+                    </NavLink>
+                    <NavLink to="/about" className={({ isActive }) => `mobile-nav-link${isActive ? " active" : ""}`}>
+                        About
+                    </NavLink>
+                    <NavLink to="/contact" className={({ isActive }) => `mobile-nav-link${isActive ? " active" : ""}`}>
+                        Contact
+                    </NavLink>
+                </nav>
+
+                <div className="mobile-nav-icons">
+                    <IconLink href="https://www.linkedin.com/in/oskarpraestholm" label="LinkedIn">
+                        <LinkedInIcon />
+                    </IconLink>
+                    <IconLink href="https://github.com/TheActualOskar" label="GitHub">
+                        <GitHubIcon />
+                    </IconLink>
                 </div>
             </div>
-        </header>
+        </>
     );
 }
