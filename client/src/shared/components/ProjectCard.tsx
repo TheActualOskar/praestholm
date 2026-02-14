@@ -105,6 +105,14 @@ export default function ProjectCard({ project: p }: ProjectCardProps) {
                     >
                         Source Code <span className="ProjectCard__btnIcon">↗</span>
                     </a>
+                    {p.blogSlug && (
+                        <a
+                            className="ProjectCard__actionLink"
+                            href={`/blog/${p.blogSlug}`}
+                        >
+                            Read Blog <span className="ProjectCard__btnIcon">↗</span>
+                        </a>
+                    )}
                 </div>
             </div>
         </article>

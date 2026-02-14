@@ -28,8 +28,12 @@ public sealed class GitHubProjectsService
         if (string.IsNullOrWhiteSpace(user))
             throw new InvalidOperationException("GitHub:User is missing in configuration.");
 
-        // bump cache key because DTO shape changed (imageUrl)
-        return await _cache.GetOrCreateAsync("projects_v2", async entry =>
+        var blogLinks = _config.GetSection("BlogLinks")
+            .GetChildren()
+            .ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase);
+
+        // bump cache key because DTO shape changed (blogSlug)
+        return await _cache.GetOrCreateAsync("projects_v3", async entry =>
         {
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(cacheMinutes);
 
@@ -90,6 +94,8 @@ public sealed class GitHubProjectsService
 
                     var repoSlug = r.Full_Name ?? repoName; // prefer "owner/repo"
 
+                    blogLinks.TryGetValue(repoName, out var blogSlug);
+
                     return new ProjectDto(
                         title: r.Name ?? "",
                         repo: repoSlug,
@@ -101,7 +107,8 @@ public sealed class GitHubProjectsService
                         topLanguages: topLangs,
                         updatedAt: r.Updated_At ?? "",
                         isFeatured: !string.IsNullOrWhiteSpace(r.Full_Name) && featuredSet.Contains(r.Full_Name),
-                        imageUrl: imageUrl
+                        imageUrl: imageUrl,
+                        blogSlug: blogSlug
                     );
                 }
                 finally
