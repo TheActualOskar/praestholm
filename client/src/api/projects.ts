@@ -11,6 +11,7 @@ export type Project = {
     isFeatured: boolean;
     imageUrl?: string | null;
     homepageUrl?: string | null;
+    blogSlug?: string | null;
 };
 
 export async function fetchProjects(): Promise<Project[]> {

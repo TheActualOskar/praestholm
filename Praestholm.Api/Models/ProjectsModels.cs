@@ -24,6 +24,7 @@ public record ProjectDto(
     IReadOnlyList<string> topLanguages,
     string updatedAt,
     bool isFeatured,
-    string? imageUrl
+    string? imageUrl,
+    string? blogSlug
 );
 
