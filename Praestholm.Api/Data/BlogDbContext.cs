@@ -92,6 +92,86 @@ Building your own portfolio is one of the best ways to learn and demonstrate you
             },
             new BlogPost
             {
+                Id = 4,
+                Title = "My Master's Thesis: Query-Based Subscription for IoT Data Streams",
+                Slug = "masters-thesis-query-based-subscription-iot",
+                Description = "A summary of my master's thesis on designing a query-based subscription model for managing IoT data streams, featuring a custom MQTT broker, Neo4j metadata graph, and SmartFilter mechanism.",
+                Content = @"# My Master's Thesis: Query-Based Subscription for IoT Data Streams
+
+In June 2025 I completed my master's thesis in Software Engineering at the University of Southern Denmark (SDU), supervised by Aslak Johansen. The thesis investigates whether a **query-based subscription (QBS) model** can provide a more scalable and flexible alternative to the traditional query-loop approach for managing IoT data streams.
+
+## The Problem
+
+In dynamic IoT environments, new devices and data streams can appear at any time. Traditional systems rely on a **query-loop** approach where clients continuously poll for new data sources. Every time a new sensor is added, the query must be updated to include it. This leads to inefficiencies, increased development complexity, and a constant need for manual intervention as the system grows.
+
+The thesis asks: *what if the system could automatically push relevant data streams to clients as they appear, based on declarative subscriptions?*
+
+## The Approach
+
+The proposed solution flips the model from **pull to push**. Instead of clients repeatedly querying for new sources, they subscribe once using metadata-driven queries, and the system automatically routes matching data streams as they become available.
+
+### Key Technologies
+
+- **MQTT** for real-time data exchange between the broker and clients
+- **Neo4j** graph database for storing and querying IoT metadata (devices, rooms, sensor types, and their relationships)
+- **Akka.NET** actor framework for building a modular, concurrent custom broker
+- **Cypher** queries for defining flexible, graph-based subscriptions
+
+## System Architecture
+
+The system is built around a **custom MQTT broker** structured using an actor-based model. Each actor handles a specific responsibility:
+
+- **PackageListener** receives incoming MQTT packets and routes them to the appropriate handler
+- **PublishHandler** extracts payloads and forwards them to the MessageRouter
+- **SubscribeHandler** evaluates whether a subscription targets a static topic or a dynamic virtual topic
+- **VirtualTopicValidator** manages metadata-aware subscriptions by matching new data streams against precomputed label sets
+- **MessageRouter** delivers data to all matching subscribers
+- **EventNotifier** pushes real-time updates via WebSocket
+
+### The SmartFilter Mechanism
+
+A core innovation is the **SmartFilter**. Instead of evaluating the full Cypher query every time new data arrives, the system runs the query once at subscription time and extracts a set of *expected labels* (e.g., sensor type = ""temperature"", room = ""Room-A""). New data streams are then matched against these labels at runtime, avoiding repeated database queries.
+
+This shifts the cost from runtime to subscription time, making message routing fast and lightweight while still supporting expressive metadata-based filtering.
+
+### Graph-Based Metadata Model
+
+The metadata is stored as a **labeled property graph** in Neo4j. IoT devices are nodes linked to their data streams, rooms, buildings, and sensor types. This allows users to write a single Cypher query like *""give me all temperature streams in Building 42""* and have the system automatically create a virtual topic that follows matching data streams, including ones added in the future.
+
+## Evaluation and Results
+
+The QBS model was compared against the traditional query-loop (QL) approach across latency, memory usage, and CPU behavior with 10 to 4,000 concurrent queries.
+
+**Key findings:**
+
+- **Stable latency:** QBS averaged ~2 seconds end-to-end latency, consistent across all workloads, with no added overhead once SmartFilters were registered
+- **CPU behavior:** QBS showed event-driven CPU load variance, while QL maintained steady polling cycles with uniform resource consumption
+- **Memory trade-off:** QBS uses more memory upfront for SmartFilter construction (~167-171 MB) but stabilizes, while QL starts lighter (~2.5 MB) but grows less predictably with active queries
+- **Best suited for:** Systems with long-lived subscriptions and high message throughput per topic
+
+While the results were not conclusive enough to declare QBS definitively superior, the system demonstrates **technical feasibility** and shows clear architectural benefits for certain workload profiles.
+
+## Lessons Learned
+
+1. **Protocol compliance matters** — Early reliance on the permissive Mosquitto test client masked missing MQTT features (like keep-alive handling) that only surfaced with stricter clients later
+2. **Actor boundaries need discipline** — The modular actor design provided clarity, but components like the MessageRouter accumulated too many responsibilities under load
+3. **SmartFilters trade flexibility for performance** — The approach works well when subscriptions are stable, but struggles when they change frequently
+4. **Custom brokers are powerful but demanding** — Full control over metadata, queries, and subscriptions came at the cost of development complexity and ecosystem maturity
+
+## Looking Forward
+
+Future work includes revisiting the broker architecture to reduce latency, adding proper MQTT keep-alive support, introducing load balancing, and conducting evaluations in isolated test environments at larger scale.
+
+The thesis establishes a foundation for **adaptive, declarative IoT data integration** — a step toward systems where developers describe what data they need, and the infrastructure handles the rest.",
+                Author = "Oskar Praestholm",
+                Tags = "IoT,MQTT,Thesis,Software Engineering,.NET",
+                PublishedAt = now.AddDays(30),
+                CreatedAt = now.AddDays(30),
+                UpdatedAt = now.AddDays(30),
+                IsPublished = true
+            },
+            new BlogPost
+            {
                 Id = 3,
                 Title = "Understanding REST API Design",
                 Slug = "understanding-rest-api-design",
