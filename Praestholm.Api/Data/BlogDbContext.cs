@@ -172,6 +172,105 @@ The thesis establishes a foundation for **adaptive, declarative IoT data integra
             },
             new BlogPost
             {
+                Id = 5,
+                Title = "My Bachelor's Thesis: Scaling and Resource-Optimization with Docker",
+                Slug = "bachelors-thesis-scaling-resource-optimization-docker",
+                Description = "A summary of my bachelor's thesis on modernizing Vitec Aloc's Booking system by replacing virtual machines with Docker containers, achieving 93.75% less disk usage and improved maintainability.",
+                Content = @"# My Bachelor's Thesis: Scaling and Resource-Optimization with Docker
+
+In June 2023 I completed my bachelor's project in Software Engineering at the University of Southern Denmark (SDU), together with Jeppe Stenstrup Lauridsen. The project was done in collaboration with Vitec Aloc and focused on modernizing their internal Booking system by replacing virtual machines with Docker containers.
+
+## The Problem
+
+Vitec Aloc is a software company that develops investment management solutions. Their developers rely on an internal **Booking system** to spin up isolated test environments where they can install and test their product, PORTMAN, against customer configurations.
+
+The existing system was built on **SCVMM** (System Center Virtual Machine Manager), which managed full Windows virtual machines. Each VM came with a complete Windows installation and a preset resource allocation — whether the developer needed all those resources or not. This led to several problems:
+
+- **Wasted resources** — VMs consumed around 40 GB of disk space each for a full Windows installation, and developers would over-allocate memory to avoid build failures
+- **Frequent downtime** — The SCVMM database would fall out of sync every ~3 weeks, requiring a full physical restart of the server
+- **High maintenance cost** — The Booking Server was built on old Java code that nobody wanted to touch, with Jenkins jobs patched in as workarounds for recurring failures
+- **No resilience** — When something broke, it stayed broken until someone manually intervened
+
+The thesis asked: *can we scale and optimize the resource usage in Vitec's Booking system with Docker, and further make it maintainable and resilient towards failure?*
+
+## The Approach
+
+We proposed replacing the VM-based system with **Docker containers** running on Windows Server Core. Instead of provisioning an entire virtual machine for each test slot, we would build lightweight Docker Images containing only the PORTMAN installer, and spin up containers on demand.
+
+### Key Technologies
+
+- **Docker** for containerization on Windows Server Core
+- **ASP.NET Core** with Blazor for a full-stack C# solution
+- **Entity Framework Core** with MSSQL for data persistence
+- **MediatR** for implementing the CQRS pattern (commands and queries)
+- **Clean Architecture** for maintainable, layered code structure
+- **MudBlazor** for the admin dashboard UI
+- **NUnit** and **FluentAssertions** for testing
+
+## System Architecture
+
+The system was designed around a central **Booking Server** that communicates with the Docker Daemon, a database, a fileserver, and the GUI. The server handles the full container lifecycle: downloading installation files, building Docker Images, creating and managing containers.
+
+### The Pipeline
+
+A key challenge was building Docker Images dynamically. The PORTMAN installation file needed to be copied into the image, but network policies prevented Docker from accessing the company fileserver directly during builds. We solved this by downloading the installer locally first, then using Docker build arguments to inject it into a generic Dockerfile:
+
+The Dockerfile was kept minimal — base it on Windows Server Core, set the shell to PowerShell, copy the installer, and run it with the target database as a parameter. This allowed every PORTMAN version and branch to share the same Dockerfile template.
+
+### Clean Architecture and CQRS
+
+Midway through the project, Vitec Aloc requested we adopt **Clean Architecture** to ensure long-term maintainability. This restructured the codebase into distinct layers (Domain, Application, Infrastructure, Presentation) with clear dependency rules.
+
+We used **MediatR** to implement the CQRS pattern, separating commands (create container, start container, build image) from queries (get container info, list all containers). Each operation became a self-contained handler with its dependencies injected, making the code modular and testable.
+
+### Availability Tactics
+
+To address the resilience problems of the old system, we implemented **health checks** using ASP.NET Core's built-in health check framework:
+
+- **MSSQL Database check** — Verifies the database is reachable
+- **Fileserver check** — Ensures the installation file server is accessible
+- **Docker Daemon check** — Confirms the Docker client can communicate with the daemon
+- **Database/Docker sync check** — Compares container statuses in the database against actual Docker Daemon state, flagging mismatches
+
+If any dependency was unavailable, the system would gracefully limit operations rather than crash. An admin dashboard displayed all health check results with a polling interval, giving maintainers a real-time overview of system health.
+
+## Development Process
+
+We worked in **two iterations**. The first was a proof of concept: get Docker running with Windows containers, prove we could create, start, pause, stop, and remove containers programmatically through C#. The second iteration built the full Booking system with Clean Architecture, the database layer, the Blazor GUI, and availability tactics.
+
+The mid-project switch to Clean Architecture was a significant pivot that cost us time, but it was the right decision for the codebase's future. It also taught us an important lesson about stakeholder communication — had we confirmed the architectural requirements earlier, we could have avoided the rework.
+
+## Results
+
+**Key findings:**
+
+- **93.75% disk reduction** — Docker containers using Windows Server Core consumed only ~2.5 GB compared to ~40 GB for full VM installations
+- **Improved maintainability** — Clean Architecture and the CQRS pattern made the codebase modular and approachable for Vitec Aloc's own developers
+- **Better resilience** — Health checks provided continuous monitoring and prevented the system from operating on a faulty foundation
+- **Pausable containers** — Unlike VMs that always consumed resources, Docker containers could be paused over weekends without constant resource usage
+
+Scalability was scoped out due to time constraints — the system is stateful (tied to a single Docker Daemon), and true horizontal scaling would require an orchestrator like Kubernetes. This remains as future work.
+
+## Lessons Learned
+
+1. **Clarify architecture early** — The late switch to Clean Architecture was valuable but costly. Confirming technical requirements with stakeholders upfront saves time
+2. **Docker on Windows has quirks** — The Docker.DotNet library couldn't build images the way we needed, so we had to shell out to `docker build` via `System.Diagnostics.Process`
+3. **Network policies matter** — Corporate network restrictions blocked our initial Dockerfile approach, forcing a workaround with local file downloads
+4. **Test what you build** — We missed testing the image build functionality in our first iteration, which was the one feature that couldn't use the Docker.DotNet library. Earlier testing would have caught this gap sooner
+5. **Containers are not VMs** — The shift from virtual machines to containers required rethinking resource allocation, lifecycle management, and how installation processes work
+
+## Looking Forward
+
+Future work includes adding Kubernetes for horizontal scalability, implementing logging for real-time debugging, expanding test coverage, and adding support for all of Vitec Aloc's products beyond PORTMAN. With those additions, the system could serve as a full replacement for the existing Booking server.",
+                Author = "Oskar Praestholm",
+                Tags = "Docker,.NET,Blazor,Clean Architecture,Bachelor Thesis",
+                PublishedAt = now.AddDays(35),
+                CreatedAt = now.AddDays(35),
+                UpdatedAt = now.AddDays(35),
+                IsPublished = true
+            },
+            new BlogPost
+            {
                 Id = 3,
                 Title = "Understanding REST API Design",
                 Slug = "understanding-rest-api-design",
