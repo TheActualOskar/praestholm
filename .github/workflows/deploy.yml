@@ -31,13 +31,16 @@ jobs:
         with:
           dotnet-version: "8.0.x"
 
-      - name: Inject connection string
+      - name: Inject production secrets
         run: |
           cd Praestholm.Api
           cat <<EOF > appsettings.Production.json
           {
             "ConnectionStrings": {
               "Blog": "${{ secrets.BLOG_CONNECTION_STRING }}"
+            },
+            "GitHub": {
+              "Token": "${{ secrets.API_TOKEN }}"
             }
           }
           EOF
