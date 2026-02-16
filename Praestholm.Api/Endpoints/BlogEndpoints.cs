@@ -7,6 +7,8 @@ public static class BlogEndpoints
 {
     public static IEndpointRouteBuilder MapBlogEndpoints(this IEndpointRouteBuilder app)
     {
+        var apiKeyFilter = new ApiKeyEndpointFilter(app.ServiceProvider.GetRequiredService<IConfiguration>());
+
         app.MapGet("/api/blog", async (BlogService service, CancellationToken ct) =>
             {
                 try
@@ -50,7 +52,8 @@ public static class BlogEndpoints
                 }
             })
             .WithName("CreateBlogPost")
-            .WithOpenApi();
+            .WithOpenApi()
+            .AddEndpointFilter(apiKeyFilter);
 
         app.MapPut("/api/blog/{id:int}", async (int id, UpdateBlogPostRequest request, BlogService service, CancellationToken ct) =>
             {
@@ -65,7 +68,8 @@ public static class BlogEndpoints
                 }
             })
             .WithName("UpdateBlogPost")
-            .WithOpenApi();
+            .WithOpenApi()
+            .AddEndpointFilter(apiKeyFilter);
 
         app.MapDelete("/api/blog/{id:int}", async (int id, BlogService service, CancellationToken ct) =>
             {
@@ -80,8 +84,31 @@ public static class BlogEndpoints
                 }
             })
             .WithName("DeleteBlogPost")
-            .WithOpenApi();
+            .WithOpenApi()
+            .AddEndpointFilter(apiKeyFilter);
 
         return app;
+    }
+}
+
+public class ApiKeyEndpointFilter : IEndpointFilter
+{
+    private readonly string _apiKey;
+
+    public ApiKeyEndpointFilter(IConfiguration configuration)
+    {
+        _apiKey = configuration["ApiKey"]
+            ?? throw new InvalidOperationException("ApiKey is not configured.");
+    }
+
+    public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
+    {
+        if (!context.HttpContext.Request.Headers.TryGetValue("X-Api-Key", out var providedKey)
+            || providedKey != _apiKey)
+        {
+            return Results.Unauthorized();
+        }
+
+        return await next(context);
     }
 }

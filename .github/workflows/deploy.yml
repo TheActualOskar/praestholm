@@ -36,6 +36,7 @@ jobs:
           cd Praestholm.Api
           cat <<EOF > appsettings.Production.json
           {
+            "ApiKey": "${{ secrets.API_KEY }}",
             "ConnectionStrings": {
               "Blog": "${{ secrets.BLOG_CONNECTION_STRING }}"
             },
