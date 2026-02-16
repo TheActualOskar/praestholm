@@ -13,9 +13,9 @@ public static class ProjectsEndpoints
                     var projects = await service.GetProjectsAsync(ct);
                     return Results.Ok(projects);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    return Results.Problem(ex.Message);
+                    return Results.Problem("An unexpected error occurred.");
                 }
             })
             .WithName("GetProjects")

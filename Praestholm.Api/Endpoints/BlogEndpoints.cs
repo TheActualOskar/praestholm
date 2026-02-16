@@ -16,9 +16,9 @@ public static class BlogEndpoints
                     var posts = await service.GetAllPublishedAsync(ct);
                     return Results.Ok(posts);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    return Results.Problem(ex.Message);
+                    return Results.Problem("An unexpected error occurred.");
                 }
             })
             .WithName("GetBlogPosts")
@@ -31,9 +31,9 @@ public static class BlogEndpoints
                     var post = await service.GetBySlugAsync(slug, ct);
                     return post is null ? Results.NotFound() : Results.Ok(post);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    return Results.Problem(ex.Message);
+                    return Results.Problem("An unexpected error occurred.");
                 }
             })
             .WithName("GetBlogPost")
@@ -46,9 +46,9 @@ public static class BlogEndpoints
                     var post = await service.CreateAsync(request, ct);
                     return Results.Created($"/api/blog/{post.slug}", post);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    return Results.Problem(ex.Message);
+                    return Results.Problem("An unexpected error occurred.");
                 }
             })
             .WithName("CreateBlogPost")
@@ -62,9 +62,9 @@ public static class BlogEndpoints
                     var post = await service.UpdateAsync(id, request, ct);
                     return post is null ? Results.NotFound() : Results.Ok(post);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    return Results.Problem(ex.Message);
+                    return Results.Problem("An unexpected error occurred.");
                 }
             })
             .WithName("UpdateBlogPost")
@@ -78,9 +78,9 @@ public static class BlogEndpoints
                     var deleted = await service.DeleteAsync(id, ct);
                     return deleted ? Results.NoContent() : Results.NotFound();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    return Results.Problem(ex.Message);
+                    return Results.Problem("An unexpected error occurred.");
                 }
             })
             .WithName("DeleteBlogPost")
