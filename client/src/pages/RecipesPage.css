@@ -1,0 +1,126 @@
+/* =========================================
+   Recipes (reuses Blog page/card styles)
+   ========================================= */
+
+.Recipes__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.Recipes__logout,
+.Recipes__tag {
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.75);
+    padding: 7px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.04);
+    cursor: pointer;
+    transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.Recipes__logout:hover,
+.Recipes__tag:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.Recipes__tag.is-active {
+    color: var(--accent, #38d6c8);
+    border-color: rgba(56, 214, 200, 0.35);
+    background: rgba(56, 214, 200, 0.10);
+}
+
+.Recipes__toolbar {
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.Recipes__search,
+.RecipeLogin__input {
+    width: 100%;
+    max-width: 420px;
+    box-sizing: border-box;
+    font: inherit;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.92);
+    padding: 11px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(0, 0, 0, 0.35);
+    outline: none;
+}
+
+.Recipes__search:focus,
+.RecipeLogin__input:focus {
+    border-color: rgba(56, 214, 200, 0.55);
+}
+
+.Recipes__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.Recipe__source {
+    display: inline-block;
+    margin-top: 18px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent, #38d6c8);
+}
+
+/* ---- Login ---- */
+
+.RecipeLogin {
+    margin-top: 24px;
+    max-width: 420px;
+    padding: 24px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.RecipeLogin__title {
+    margin: 0;
+    font-size: 22px;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.RecipeLogin__hint {
+    margin: 0;
+    font-size: 13.5px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.RecipeLogin__button {
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 11px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(56, 214, 200, 0.35);
+    background: rgba(56, 214, 200, 0.14);
+    color: var(--accent, #38d6c8);
+    cursor: pointer;
+}
+
+.RecipeLogin__button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.RecipeLogin__error {
+    font-size: 13.5px;
+    color: #ff8a8a;
+}

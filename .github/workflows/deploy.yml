@@ -42,6 +42,9 @@ jobs:
             },
             "GitHub": {
               "Token": "${{ secrets.API_TOKEN }}"
+            },
+            "Recipes": {
+              "Password": "${{ secrets.RECIPES_PASSWORD }}"
             }
           }
           EOF
