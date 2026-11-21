@@ -8,7 +8,7 @@ namespace Praestholm.Api.Services;
 
 public class UserService
 {
-    public const int MinPasswordLength = 10;
+    public const int MinPasswordLength = 6;
 
     private readonly BlogDbContext _db;
     private readonly IPasswordHasher<User> _hasher;
