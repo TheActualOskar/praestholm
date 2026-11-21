@@ -10,12 +10,35 @@ public class BlogDbContext : DbContext, IDataProtectionKeyContext
 
     public DbSet<BlogPost> BlogPosts => Set<BlogPost>();
     public DbSet<Recipe> Recipes => Set<Recipe>();
+    public DbSet<User> Users => Set<User>();
+    public DbSet<Invite> Invites => Set<Invite>();
 
     // Persists cookie-encryption keys so recipe logins survive app pool recycles.
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasIndex(e => e.Username).IsUnique();
+            entity.HasIndex(e => e.Email).IsUnique();
+            entity.Property(e => e.Username).HasMaxLength(50);
+            entity.Property(e => e.Email).HasMaxLength(256);
+            entity.Property(e => e.PasswordHash).HasMaxLength(500);
+        });
+
+        modelBuilder.Entity<Invite>(entity =>
+        {
+            entity.HasIndex(e => e.TokenHash).IsUnique();
+            entity.HasIndex(e => e.Email);
+            entity.Property(e => e.Email).HasMaxLength(256);
+            entity.Property(e => e.TokenHash).HasMaxLength(64);
+            entity.HasOne(e => e.InvitedBy)
+                .WithMany()
+                .HasForeignKey(e => e.InvitedByUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
         modelBuilder.Entity<Recipe>(entity =>
         {
             entity.HasIndex(e => e.Slug).IsUnique();

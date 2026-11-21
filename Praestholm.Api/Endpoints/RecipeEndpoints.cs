@@ -1,6 +1,4 @@
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Praestholm.Api.Models;
@@ -17,25 +15,18 @@ public static class RecipeEndpoints
         var config = app.ServiceProvider.GetRequiredService<IConfiguration>();
         var apiKeyFilter = new ApiKeyEndpointFilter(config);
 
-        // ---- Household login (cookie) ----
+        // ---- User login (cookie) ----
 
-        app.MapPost("/api/recipes/login", async (RecipeLoginRequest request, HttpContext http, IConfiguration cfg) =>
+        app.MapPost("/api/recipes/login", async (LoginRequest request, HttpContext http, UserService users, CancellationToken ct) =>
             {
-                var expected = cfg["Recipes:Password"];
-                if (string.IsNullOrEmpty(expected))
-                    return Results.Problem("Recipe login is not configured.", statusCode: 503);
-
-                if (!PasswordMatches(request.Password ?? string.Empty, expected))
+                if (string.IsNullOrWhiteSpace(request.Login) || string.IsNullOrEmpty(request.Password))
                     return Results.Unauthorized();
 
-                var identity = new ClaimsIdentity(
-                    [new Claim(ClaimTypes.Name, "household")],
-                    CookieAuthenticationDefaults.AuthenticationScheme);
+                var user = await users.VerifyAsync(request.Login, request.Password, ct);
+                if (user is null)
+                    return Results.Unauthorized();
 
-                await http.SignInAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    new ClaimsPrincipal(identity),
-                    new AuthenticationProperties { IsPersistent = true });
+                await AuthCookie.SignInAsync(http, user);
 
                 return Results.NoContent();
             })
@@ -51,12 +42,13 @@ public static class RecipeEndpoints
             .WithName("RecipeLogout")
             .WithOpenApi();
 
-        app.MapGet("/api/recipes/me", () => Results.NoContent())
+        app.MapGet("/api/recipes/me", (ClaimsPrincipal user) =>
+                Results.Ok(new { username = user.Identity?.Name }))
             .WithName("RecipeMe")
             .WithOpenApi()
             .RequireAuthorization();
 
-        // ---- Read (household cookie) ----
+        // ---- Read (logged-in user) ----
 
         app.MapGet("/api/recipes", async (RecipeService service, CancellationToken ct) =>
             {
@@ -127,10 +119,4 @@ public static class RecipeEndpoints
 
         return app;
     }
-
-    // Hash both sides so the comparison is constant-time regardless of length.
-    private static bool PasswordMatches(string provided, string expected) =>
-        CryptographicOperations.FixedTimeEquals(
-            SHA256.HashData(Encoding.UTF8.GetBytes(provided)),
-            SHA256.HashData(Encoding.UTF8.GetBytes(expected)));
 }

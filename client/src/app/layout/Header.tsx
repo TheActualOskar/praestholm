@@ -179,6 +179,7 @@ export default function Header() {
                             <NavItem to="/blog" label="Blog" />
                             <NavItem to="/about" label="About" />
                             <NavItem to="/contact" label="Contact" />
+                            <NavItem to="/opskrifter" label="Opskrifter" />
                         </nav>
 
                         <div
@@ -235,6 +236,9 @@ export default function Header() {
                     </NavLink>
                     <NavLink to="/contact" className={({ isActive }) => `mobile-nav-link${isActive ? " active" : ""}`}>
                         Contact
+                    </NavLink>
+                    <NavLink to="/opskrifter" className={({ isActive }) => `mobile-nav-link${isActive ? " active" : ""}`}>
+                        Opskrifter
                     </NavLink>
                 </nav>
 

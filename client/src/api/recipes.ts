@@ -17,7 +17,7 @@ export type Recipe = RecipeSummary & {
     createdAt: string;
 };
 
-/** Thrown when the household login cookie is missing or expired. */
+/** Thrown when the login cookie is missing or expired. */
 export class NotLoggedInError extends Error {
     constructor() {
         super("Not logged in");
@@ -40,14 +40,15 @@ export function fetchRecipe(slug: string): Promise<Recipe> {
     return getJson(`/api/recipes/${encodeURIComponent(slug)}`);
 }
 
-export async function loginRecipes(password: string): Promise<void> {
+/** `login` is the username or the email. */
+export async function loginRecipes(login: string, password: string): Promise<void> {
     const res = await fetch("/api/recipes/login", {
         method: "POST",
         credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ login, password }),
     });
-    if (res.status === 401) throw new Error("Forkert kodeord");
+    if (res.status === 401) throw new Error("Forkert brugernavn eller kodeord");
     if (res.status === 429) throw new Error("For mange forsøg. Vent et minut.");
     if (!res.ok) throw new Error("Login fejlede");
 }

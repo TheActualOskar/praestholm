@@ -9,6 +9,28 @@
     gap: 16px;
 }
 
+.Recipes__headerActions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.Invite__actions {
+    display: flex;
+    gap: 8px;
+}
+
+.Invite__actions .RecipeLogin__button {
+    flex: 1;
+}
+
+.Invite__result {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
 .Recipes__logout,
 .Recipes__tag {
     font: inherit;
