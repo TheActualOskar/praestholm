@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using Praestholm.Api.Models;
 using Praestholm.Api.Services;
 
@@ -103,8 +105,11 @@ public class ApiKeyEndpointFilter : IEndpointFilter
 
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
-        if (!context.HttpContext.Request.Headers.TryGetValue("X-Api-Key", out var providedKey)
-            || providedKey != _apiKey)
+        // An unset key must never match: otherwise an empty X-Api-Key header would be accepted.
+        if (string.IsNullOrWhiteSpace(_apiKey)
+            || !context.HttpContext.Request.Headers.TryGetValue("X-Api-Key", out var providedKey)
+            || !CryptographicOperations.FixedTimeEquals(
+                Encoding.UTF8.GetBytes(providedKey.ToString()), Encoding.UTF8.GetBytes(_apiKey)))
         {
             return Results.Unauthorized();
         }
