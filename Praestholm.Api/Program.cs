@@ -117,27 +117,24 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// TEMPORARY bootstrap login (oskar / 123456) so the first real account can be invited.
-// Remove this block and delete the user once you have signed up through an invite.
+// Remove the former temporary bootstrap login (oskar / 123456) if it still exists.
+// It is identified by its placeholder email, so a real account named "oskar" is never touched.
 using (var scope = app.Services.CreateScope())
 {
     try
     {
         var db = scope.ServiceProvider.GetRequiredService<BlogDbContext>();
-        var hasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher<User>>();
-        var bootstrap = db.Users.FirstOrDefault(u => u.Username == "oskar");
-        if (bootstrap is null)
+        var bootstrap = db.Users.FirstOrDefault(u => u.Email == "bootstrap@praestholm.invalid");
+        if (bootstrap is not null)
         {
-            bootstrap = new User { Username = "oskar", Email = "bootstrap@praestholm.invalid", CreatedAt = DateTime.UtcNow };
-            db.Users.Add(bootstrap);
+            db.Users.Remove(bootstrap);
+            db.SaveChanges();
         }
-        bootstrap.PasswordHash = hasher.HashPassword(bootstrap, "123456");
-        db.SaveChanges();
     }
     catch (Exception ex)
     {
         scope.ServiceProvider.GetRequiredService<ILogger<BlogDbContext>>()
-            .LogWarning(ex, "Could not create the temporary bootstrap user.");
+            .LogWarning(ex, "Could not remove the temporary bootstrap user.");
     }
 }
 
