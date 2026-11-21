@@ -1,16 +1,31 @@
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Praestholm.Api.Models;
 
 namespace Praestholm.Api.Data;
 
-public class BlogDbContext : DbContext
+public class BlogDbContext : DbContext, IDataProtectionKeyContext
 {
     public BlogDbContext(DbContextOptions<BlogDbContext> options) : base(options) { }
 
     public DbSet<BlogPost> BlogPosts => Set<BlogPost>();
+    public DbSet<Recipe> Recipes => Set<Recipe>();
+
+    // Persists cookie-encryption keys so recipe logins survive app pool recycles.
+    public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Recipe>(entity =>
+        {
+            entity.HasIndex(e => e.Slug).IsUnique();
+            entity.Property(e => e.Title).HasMaxLength(200);
+            entity.Property(e => e.Slug).HasMaxLength(200);
+            entity.Property(e => e.SourceUrl).HasMaxLength(500);
+            entity.Property(e => e.Tags).HasMaxLength(500);
+            entity.Property(e => e.Content).HasColumnType("nvarchar(max)");
+        });
+
         modelBuilder.Entity<BlogPost>(entity =>
         {
             entity.HasIndex(e => e.Slug).IsUnique();
