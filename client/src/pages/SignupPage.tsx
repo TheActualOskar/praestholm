@@ -4,7 +4,7 @@ import { lookupInvite, signup, type InviteInfo } from "../api/invites";
 import "./BlogPage.css";
 import "./RecipesPage.css";
 
-const MIN_PASSWORD = 10;
+const MIN_PASSWORD = 6;
 
 type State =
     | { kind: "loading" }
