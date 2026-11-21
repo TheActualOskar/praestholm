@@ -43,8 +43,12 @@ jobs:
             "GitHub": {
               "Token": "${{ secrets.API_TOKEN }}"
             },
-            "Recipes": {
-              "Password": "${{ secrets.RECIPES_PASSWORD }}"
+            "PublicBaseUrl": "${{ vars.PUBLIC_BASE_URL }}",
+            "Smtp": {
+              "Host": "${{ secrets.SMTP_HOST }}",
+              "Username": "${{ secrets.SMTP_USERNAME }}",
+              "Password": "${{ secrets.SMTP_PASSWORD }}",
+              "From": "${{ secrets.SMTP_FROM }}"
             }
           }
           EOF

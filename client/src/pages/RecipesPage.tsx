@@ -9,6 +9,7 @@ import {
 } from "../api/recipes";
 import Pill from "../shared/components/Pill";
 import RecipeLogin from "./RecipeLogin";
+import InviteForm from "./InviteForm";
 import "./BlogPage.css";
 import "./RecipesPage.css";
 
@@ -22,6 +23,7 @@ export default function RecipesPage() {
     const [state, setState] = useState<State>({ kind: "loading" });
     const [query, setQuery] = useState("");
     const [activeTag, setActiveTag] = useState<string | null>(null);
+    const [showInvite, setShowInvite] = useState(false);
 
     // setState only happens asynchronously here, so it's safe to call from an effect.
     const load = useCallback(() => {
@@ -63,6 +65,7 @@ export default function RecipesPage() {
 
     async function logout() {
         await logoutRecipes();
+        setShowInvite(false);
         setState({ kind: "login" });
     }
 
@@ -76,9 +79,14 @@ export default function RecipesPage() {
                         <p className="Blogpage__subtitle">Husstandens samling af retter.</p>
                     </div>
                     {state.kind === "ready" && (
-                        <button className="Recipes__logout" onClick={logout}>
-                            Log ud
-                        </button>
+                        <div className="Recipes__headerActions">
+                            <button className="Recipes__logout" onClick={() => setShowInvite(!showInvite)}>
+                                Inviter
+                            </button>
+                            <button className="Recipes__logout" onClick={logout}>
+                                Log ud
+                            </button>
+                        </div>
                     )}
                 </header>
 
@@ -95,6 +103,8 @@ export default function RecipesPage() {
 
                 {state.kind === "ready" && (
                     <>
+                        {showInvite && <InviteForm onClose={() => setShowInvite(false)} />}
+
                         <div className="Recipes__toolbar">
                             <input
                                 className="Recipes__search"

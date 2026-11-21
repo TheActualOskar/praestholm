@@ -62,5 +62,3 @@ public record UpsertRecipeRequest(
     int? KeepsDays,
     string Content
 );
-
-public record RecipeLoginRequest(string Password);

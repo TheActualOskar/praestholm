@@ -1,10 +1,14 @@
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Praestholm.Api.Data;
 using Praestholm.Api.Endpoints;
+using Praestholm.Api.Models;
 using Praestholm.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +31,10 @@ builder.Services.AddDbContext<BlogDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Blog")));
 builder.Services.AddScoped<BlogService>();
 builder.Services.AddScoped<RecipeService>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<InviteService>();
+builder.Services.AddSingleton<EmailSender>();
+builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
 
 // Recipe login: cookie keys live in the DB so logins survive IIS app pool recycles.
 builder.Services.AddDataProtection()
@@ -44,6 +52,15 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
             : CookieSecurePolicy.Always;
         options.ExpireTimeSpan = TimeSpan.FromDays(90);
         options.SlidingExpiration = true;
+        // Cookies from the old shared-password login carry no user id: make those people log in again.
+        options.Events.OnValidatePrincipal = async ctx =>
+        {
+            if (ctx.Principal?.FindFirst(ClaimTypes.NameIdentifier) is null)
+            {
+                ctx.RejectPrincipal();
+                await ctx.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            }
+        };
         // API-only: answer 401/403 instead of redirecting to a login page.
         options.Events.OnRedirectToLogin = ctx =>
         {
@@ -65,6 +82,10 @@ builder.Services.AddRateLimiter(options =>
         RateLimitPartition.GetFixedWindowLimiter(
             http.Connection.RemoteIpAddress?.ToString() ?? "unknown",
             _ => new FixedWindowRateLimiterOptions { PermitLimit = 5, Window = TimeSpan.FromMinutes(1) }));
+    options.AddPolicy(InviteEndpoints.SignupRateLimitPolicy, http =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            http.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions { PermitLimit = 10, Window = TimeSpan.FromMinutes(1) }));
 });
 
 var app = builder.Build();
@@ -103,6 +124,8 @@ app.UseAuthorization();
 app.MapProjectsEndpoints();
 app.MapBlogEndpoints();
 app.MapRecipeEndpoints();
+app.MapUserEndpoints();
+app.MapInviteEndpoints();
 
 app.MapFallbackToFile("index.html");
 
