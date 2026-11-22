@@ -10,6 +10,8 @@ public class BlogDbContext : DbContext, IDataProtectionKeyContext
 
     public DbSet<BlogPost> BlogPosts => Set<BlogPost>();
     public DbSet<Recipe> Recipes => Set<Recipe>();
+    public DbSet<RecipeIngredient> RecipeIngredients => Set<RecipeIngredient>();
+    public DbSet<RecipeStep> RecipeSteps => Set<RecipeStep>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Invite> Invites => Set<Invite>();
 
@@ -46,7 +48,36 @@ public class BlogDbContext : DbContext, IDataProtectionKeyContext
             entity.Property(e => e.Slug).HasMaxLength(200);
             entity.Property(e => e.SourceUrl).HasMaxLength(500);
             entity.Property(e => e.Tags).HasMaxLength(500);
-            entity.Property(e => e.Content).HasColumnType("nvarchar(max)");
+            entity.Property(e => e.Cuisine).HasMaxLength(50);
+            entity.HasIndex(e => e.Cuisine);
+            entity.Property(e => e.Intro).HasColumnType("nvarchar(max)");
+            entity.Property(e => e.Leftovers).HasColumnType("nvarchar(max)");
+            entity.Property(e => e.Notes).HasColumnType("nvarchar(max)");
+            entity.HasMany(e => e.Ingredients)
+                .WithOne()
+                .HasForeignKey(e => e.RecipeId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasMany(e => e.Steps)
+                .WithOne()
+                .HasForeignKey(e => e.RecipeId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<RecipeIngredient>(entity =>
+        {
+            entity.HasIndex(e => new { e.RecipeId, e.Position });
+            entity.Property(e => e.Section).HasMaxLength(100);
+            entity.Property(e => e.Amount).HasPrecision(10, 3);
+            entity.Property(e => e.Unit).HasMaxLength(30);
+            entity.Property(e => e.Name).HasMaxLength(200);
+            entity.Property(e => e.Note).HasMaxLength(200);
+        });
+
+        modelBuilder.Entity<RecipeStep>(entity =>
+        {
+            entity.HasIndex(e => new { e.RecipeId, e.Position });
+            entity.Property(e => e.Section).HasMaxLength(100);
+            entity.Property(e => e.Text).HasMaxLength(2000);
         });
 
         modelBuilder.Entity<BlogPost>(entity =>

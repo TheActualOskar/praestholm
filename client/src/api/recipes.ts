@@ -3,6 +3,7 @@ export type RecipeSummary = {
     title: string;
     slug: string;
     sourceUrl: string | null;
+    cuisine: string | null;
     servings: number | null;
     totalMinutes: number | null;
     activeMinutes: number | null;
@@ -12,10 +13,58 @@ export type RecipeSummary = {
     updatedAt: string;
 };
 
+export type Ingredient = {
+    section: string | null;
+    amount: number | null;
+    unit: string | null;
+    name: string;
+    note: string | null;
+};
+
+export type Step = {
+    section: string | null;
+    text: string;
+};
+
 export type Recipe = RecipeSummary & {
-    content: string;
+    intro: string | null;
+    ingredients: Ingredient[];
+    steps: Step[];
+    leftovers: string | null;
+    notes: string | null;
     createdAt: string;
 };
+
+/** Groups consecutive items by their `section` (null = no heading), keeping order. */
+export function groupBySection<T extends { section: string | null }>(items: T[]): { section: string | null; items: T[] }[] {
+    const groups: { section: string | null; items: T[] }[] = [];
+    for (const item of items) {
+        const last = groups[groups.length - 1];
+        if (last && last.section === item.section) last.items.push(item);
+        else groups.push({ section: item.section, items: [item] });
+    }
+    return groups;
+}
+
+const FRACTIONS: [number, string][] = [
+    [0.25, "¼"],
+    [0.5, "½"],
+    [0.75, "¾"],
+];
+
+/** Danish amount: 1.5 -> "1½", 2.3 -> "2,3", 0.333 -> "0,33". */
+export function formatAmount(amount: number): string {
+    const whole = Math.floor(amount);
+    const frac = amount - whole;
+    for (const [value, glyph] of FRACTIONS) {
+        if (Math.abs(frac - value) < 0.001) return whole > 0 ? `${whole}${glyph}` : glyph;
+    }
+    return amount.toLocaleString("da-DK", { maximumFractionDigits: 2 });
+}
+
+export function formatIngredient(i: Ingredient): string {
+    return [i.amount != null ? formatAmount(i.amount) : null, i.unit, i.name].filter(Boolean).join(" ");
+}
 
 /** Thrown when the login cookie is missing or expired. */
 export class NotLoggedInError extends Error {
