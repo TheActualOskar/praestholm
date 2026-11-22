@@ -11,6 +11,7 @@ import RecipePage from "../pages/RecipePage";
 import RecipeEditorPage from "../pages/RecipeEditorPage";
 import RecipeThemePage from "../pages/RecipeThemePage";
 import MadkurvPage from "../pages/MadkurvPage";
+import RecipeImportsPage from "../pages/RecipeImportsPage";
 import SignupPage from "../pages/SignupPage";
 
 export const router = createBrowserRouter([
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
             { path: "contact", element: <ContactPage /> },
             { path: "opskrifter", element: <RecipesPage /> },
             { path: "opskrifter/ny", element: <RecipeEditorPage /> },
+            { path: "opskrifter/generering", element: <RecipeImportsPage /> },
             { path: "opskrifter/tema/:cuisine", element: <RecipeThemePage /> },
             { path: "opskrifter/:slug", element: <RecipePage /> },
             { path: "opskrifter/:slug/rediger", element: <RecipeEditorPage /> },

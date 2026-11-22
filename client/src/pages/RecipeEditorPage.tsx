@@ -15,6 +15,8 @@ import {
 } from "../api/recipes";
 import { parseAmount, parseIngredientsText, parseStepsText, UNITS } from "../api/recipeText";
 import RecipeLogin from "./RecipeLogin";
+import { LinkForm } from "./RecipeImportsPage";
+import { addImport } from "../api/recipeImports";
 import "./BlogPage.css";
 import "./RecipesPage.css";
 import "./RecipeEditor.css";
@@ -185,6 +187,8 @@ type LoadState =
 
 export default function RecipeEditorPage() {
     const { slug } = useParams<{ slug: string }>();
+    const [searchParams] = useSearchParams();
+    const method = slug ? "manuel" : searchParams.get("metode");
     const [state, setState] = useState<LoadState>({ kind: "loading" });
 
     const load = useCallback(() => {
@@ -235,13 +239,85 @@ export default function RecipeEditorPage() {
                     />
                 )}
                 {state.kind === "error" && <div className="Blogpage__error">{state.message}</div>}
-                {state.kind === "ready" && (
+                {state.kind === "ready" && !state.recipe && method !== "manuel" && method !== "link" && <MethodChooser />}
+                {state.kind === "ready" && !state.recipe && method === "link" && <LinkImport onLoggedOut={() => setState({ kind: "login" })} />}
+                {state.kind === "ready" && (state.recipe || method === "manuel") && (
                     <RecipeForm
                         key={state.recipe?.slug ?? "new"}
                         recipe={state.recipe}
                         cuisines={state.cuisines}
                         tagSuggestions={state.tags}
                     />
+                )}
+            </div>
+        </div>
+    );
+}
+
+// ---------- New recipe: choose method ----------
+
+function MethodChooser() {
+    const [searchParams] = useSearchParams();
+    const withMethod = (metode: string) => {
+        const next = new URLSearchParams(searchParams);
+        next.set("metode", metode);
+        return `/opskrifter/ny?${next}`;
+    };
+
+    return (
+        <div className="Editor">
+            <h1 className="BlogPost__articleTitle">Ny opskrift</h1>
+            <p className="Editor__hint">Hvordan vil du tilføje den?</p>
+            <div className="Methods">
+                <Link to={withMethod("link")} className="Methods__card">
+                    <span className="Methods__title">Fra et link</span>
+                    <span className="Methods__text">
+                        Indsæt et link til en opskrift. Claude laver den om til en kladde, når generatoren køres på PC’en. Du gennemser og
+                        udgiver den bagefter.
+                    </span>
+                </Link>
+                <Link to={withMethod("manuel")} className="Methods__card">
+                    <span className="Methods__title">Skriv selv</span>
+                    <span className="Methods__text">
+                        Udfyld formularen med ingredienser og fremgangsmåde. Du kan også indsætte tekst og få den delt op i linjer.
+                    </span>
+                </Link>
+            </div>
+        </div>
+    );
+}
+
+function LinkImport({ onLoggedOut }: { onLoggedOut: () => void }) {
+    const navigate = useNavigate();
+    const [busy, setBusy] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    async function add(url: string, comment: string | null) {
+        setBusy(true);
+        setError(null);
+        try {
+            await addImport(url, comment);
+            navigate("/opskrifter/generering");
+        } catch (e) {
+            if (e instanceof NotLoggedInError) onLoggedOut();
+            else setError(e instanceof Error ? e.message : "Kunne ikke tilføje linket");
+            setBusy(false);
+        }
+    }
+
+    return (
+        <div className="Editor">
+            <h1 className="BlogPost__articleTitle">Ny opskrift fra link</h1>
+            <div className="Editor__card">
+                <p className="Editor__hint">
+                    Linket lægges i køen <Link to="/opskrifter/generering">Til generering</Link>. Når generatoren har kørt på PC’en, ligger
+                    opskriften som kladde, klar til at blive gennemset og udgivet.
+                </p>
+                <LinkForm busy={busy} onAdd={add} />
+                {error && (
+                    <div className="Editor__error" role="alert">
+                        {error}
+                    </div>
                 )}
             </div>
         </div>

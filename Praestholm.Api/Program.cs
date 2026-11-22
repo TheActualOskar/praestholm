@@ -32,6 +32,7 @@ builder.Services.AddDbContext<BlogDbContext>(options =>
 builder.Services.AddScoped<BlogService>();
 builder.Services.AddScoped<RecipeService>();
 builder.Services.AddScoped<MadkurvService>();
+builder.Services.AddScoped<RecipeImportService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<InviteService>();
 builder.Services.AddSingleton<EmailSender>();
@@ -147,6 +148,7 @@ app.MapProjectsEndpoints();
 app.MapBlogEndpoints();
 app.MapRecipeEndpoints();
 app.MapMadkurvEndpoints();
+app.MapRecipeImportEndpoints();
 app.MapUserEndpoints();
 app.MapInviteEndpoints();
 
