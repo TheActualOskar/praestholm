@@ -41,6 +41,7 @@ public class MadkurvService
         .Include(b => b.Extras)
         .Include(b => b.Checks)
         .Include(b => b.Items)
+        .Include(b => b.StapleChoices)
         .AsSplitQuery();
 
     private async Task<Basket> LoadDraftAsync(CancellationToken ct)
@@ -141,12 +142,54 @@ public class MadkurvService
         return await ToDtoAsync(basket, ct);
     }
 
+    /// <summary>Køb (true), har nok (false) or undecided (null) for one faste vare in the draft.</summary>
+    public async Task<BasketDto> SetStapleChoiceAsync(int stapleId, bool? buy, CancellationToken ct = default)
+    {
+        var basket = await LoadDraftAsync(ct);
+        var exists = await _db.HouseholdItems.AnyAsync(i => i.Id == stapleId && i.Kind == HouseholdListKind.Staple, ct);
+        if (!exists) throw new KeyNotFoundException("Den faste vare findes ikke.");
+
+        var choice = basket.StapleChoices.FirstOrDefault(c => c.StapleId == stapleId);
+        if (buy is null)
+        {
+            if (choice is not null) basket.StapleChoices.Remove(choice);
+        }
+        else if (choice is null) basket.StapleChoices.Add(new BasketStapleChoice { StapleId = stapleId, Buy = buy.Value });
+        else choice.Buy = buy.Value;
+
+        await _db.SaveChangesAsync(ct);
+        return await ToDtoAsync(basket, ct);
+    }
+
+    /// <summary>Sets every faste vare that has no choice yet.</summary>
+    public async Task<BasketDto> SetRemainingStaplesAsync(bool buy, CancellationToken ct = default)
+    {
+        var basket = await LoadDraftAsync(ct);
+        foreach (var staple in await ActiveStaplesAsync(ct))
+            if (basket.StapleChoices.All(c => c.StapleId != staple.Id))
+                basket.StapleChoices.Add(new BasketStapleChoice { StapleId = staple.Id, Buy = buy });
+
+        await _db.SaveChangesAsync(ct);
+        return await ToDtoAsync(basket, ct);
+    }
+
+    private Task<List<HouseholdItem>> ActiveStaplesAsync(CancellationToken ct) => _db.HouseholdItems
+        .AsNoTracking()
+        .Where(i => i.Kind == HouseholdListKind.Staple && i.Active)
+        .OrderBy(i => i.Name)
+        .ToListAsync(ct);
+
     // ---------- Lifecycle ----------
 
     /// <summary>Kladde -> Klar: freezes the shopping list and takes the open wishes.</summary>
     public async Task<BasketDto> LockAsync(CancellationToken ct = default)
     {
         var basket = await LoadDraftAsync(ct);
+        var missing = (await ActiveStaplesAsync(ct)).Count(st => basket.StapleChoices.All(c => c.StapleId != st.Id));
+        if (missing > 0)
+            throw new BasketConflictException(
+                $"Tjek de faste varer først: {missing} mangler “Køb” eller “Har nok”.");
+
         var items = await ComputeItemsAsync(basket, ct);
         if (items.Count == 0)
             throw new BasketConflictException("Madkurven er tom.");
@@ -220,6 +263,7 @@ public class MadkurvService
         basket.Recipes.Clear();
         basket.Extras.Clear();
         basket.Checks.Clear();
+        basket.StapleChoices.Clear();
         await _db.SaveChangesAsync(ct);
         return await ToDtoAsync(basket, ct);
     }
@@ -411,7 +455,10 @@ public class MadkurvService
                         || (i.Kind == HouseholdListKind.Spice && i.Active))
             .ToListAsync(ct);
 
-        lines.AddRange(lists.Where(i => i.Kind == HouseholdListKind.Staple).Select(i => new ShoppingLine(i.Name, i.Amount, i.Unit, "Fast vare")));
+        var buyStaples = basket.StapleChoices.Where(c => c.Buy).Select(c => c.StapleId).ToHashSet();
+        lines.AddRange(lists
+            .Where(i => i.Kind == HouseholdListKind.Staple && buyStaples.Contains(i.Id))
+            .Select(i => new ShoppingLine(i.Name, i.Amount, i.Unit, "Fast vare")));
         lines.AddRange(lists.Where(i => i.Kind == HouseholdListKind.Wish).Select(i => new ShoppingLine(i.Name, i.Amount, i.Unit, "Ønske")));
         lines.AddRange(basket.Extras.OrderBy(e => e.Id).Select(e => new ShoppingLine(e.Name, e.Amount, e.Unit, "Ekstra")));
 
@@ -450,7 +497,27 @@ public class MadkurvService
                 .ToArray(),
             basket.Extras.OrderBy(e => e.Id).Select(e => new BasketExtraDto(e.Id, e.Name, e.Amount, e.Unit, e.Note, e.AddedBy)).ToArray(),
             wishes.Select(ToDto).ToArray(),
-            items.ToArray());
+            items.ToArray(),
+            await StaplesDtoAsync(basket, ct));
+    }
+
+    /// <summary>
+    /// Draft: all active staples with their choice. Locked/ordered: the staples that were decided
+    /// (also if paused since), so the checklist reads as it was at locking time.
+    /// </summary>
+    private async Task<BasketStapleDto[]> StaplesDtoAsync(Basket basket, CancellationToken ct)
+    {
+        var choices = basket.StapleChoices.ToDictionary(c => c.StapleId, c => c.Buy);
+        var staples = basket.Status == BasketStatus.Draft
+            ? await ActiveStaplesAsync(ct)
+            : await _db.HouseholdItems.AsNoTracking()
+                .Where(i => i.Kind == HouseholdListKind.Staple && choices.Keys.Contains(i.Id))
+                .OrderBy(i => i.Name)
+                .ToListAsync(ct);
+
+        return staples
+            .Select(i => new BasketStapleDto(i.Id, i.Name, i.Amount, i.Unit, i.Note, choices.TryGetValue(i.Id, out var b) ? b : null))
+            .ToArray();
     }
 
     private static HouseholdItemDto ToDto(HouseholdItem i) =>

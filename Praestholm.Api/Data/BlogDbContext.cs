@@ -17,6 +17,7 @@ public class BlogDbContext : DbContext, IDataProtectionKeyContext
     public DbSet<BasketExtra> BasketExtras => Set<BasketExtra>();
     public DbSet<BasketCheck> BasketChecks => Set<BasketCheck>();
     public DbSet<BasketItem> BasketItems => Set<BasketItem>();
+    public DbSet<BasketStapleChoice> BasketStapleChoices => Set<BasketStapleChoice>();
     public DbSet<HouseholdItem> HouseholdItems => Set<HouseholdItem>();
     public DbSet<RecipeImport> RecipeImports => Set<RecipeImport>();
     public DbSet<User> Users => Set<User>();
@@ -96,6 +97,12 @@ public class BlogDbContext : DbContext, IDataProtectionKeyContext
             entity.HasMany(e => e.Extras).WithOne().HasForeignKey(e => e.BasketId).OnDelete(DeleteBehavior.Cascade);
             entity.HasMany(e => e.Checks).WithOne().HasForeignKey(e => e.BasketId).OnDelete(DeleteBehavior.Cascade);
             entity.HasMany(e => e.Items).WithOne().HasForeignKey(e => e.BasketId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasMany(e => e.StapleChoices).WithOne().HasForeignKey(e => e.BasketId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<BasketStapleChoice>(entity =>
+        {
+            entity.HasIndex(e => new { e.BasketId, e.StapleId }).IsUnique();
         });
 
         modelBuilder.Entity<BasketRecipe>(entity =>

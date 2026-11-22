@@ -46,6 +46,16 @@ export type HouseholdItem = {
     updatedAt: string;
 };
 
+/** A faste vare in this madkurv. buy: true = køb, false = har nok, null = ikke tjekket endnu. */
+export type BasketStaple = {
+    id: number;
+    name: string;
+    amount: number | null;
+    unit: string | null;
+    note: string | null;
+    buy: boolean | null;
+};
+
 export type Basket = {
     id: number;
     status: BasketStatus;
@@ -57,6 +67,7 @@ export type Basket = {
     extras: BasketExtra[];
     wishes: HouseholdItem[];
     items: ShoppingItem[];
+    staples: BasketStaple[];
 };
 
 export type BasketSummary = {
@@ -99,6 +110,9 @@ export const updateBasketRecipe = (id: number, servings: number, day: number | n
 export const removeBasketRecipe = (id: number) => call<Basket>(`/api/madkurv/retter/${id}`, "DELETE");
 export const removeBasketExtra = (id: number) => call<Basket>(`/api/madkurv/ekstra/${id}`, "DELETE");
 export const setHave = (key: string, have: boolean) => call<Basket>("/api/madkurv/har", "PUT", { key, have });
+export const setStapleChoice = (stapleId: number, buy: boolean | null) =>
+    call<Basket>(`/api/madkurv/faste-varer/${stapleId}`, "PUT", { buy });
+export const setRemainingStaples = (buy: boolean) => call<Basket>("/api/madkurv/faste-varer/resten", "POST", { buy });
 export const lockBasket = () => call<Basket>("/api/madkurv/klar", "POST");
 export const reopenBasket = () => call<Basket>("/api/madkurv/ret-igen", "POST");
 export const clearBasket = () => call<Basket>("/api/madkurv/toem", "POST");

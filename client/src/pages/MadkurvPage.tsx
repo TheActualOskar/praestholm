@@ -21,10 +21,13 @@ import {
     reopenBasket,
     repeatBasket,
     setHave,
+    setRemainingStaples,
+    setStapleChoice,
     updateBasketRecipe,
     updateListItem,
     type Basket,
     type BasketRecipe,
+    type BasketStaple,
     type BasketSummary,
     type HouseholdItem,
     type ListKind,
@@ -48,7 +51,7 @@ const TABS: { path: string; label: string }[] = [
 const LIST_INFO: Record<ListKind, { title: string; hint: string; placeholder: string }> = {
     "faste-varer": {
         title: "Faste varer",
-        hint: "Kommer med i hver madkurv. Sæt en vare på pause, hvis I har nok i en periode.",
+        hint: "Varer I køber jævnligt. I hver madkurv skal I tage stilling til dem (køb eller har nok), før den kan gøres klar. Sæt en vare på pause, hvis den ikke skal tjekkes i en periode.",
         placeholder: "fx 2 l sødmælk",
     },
     oensker: {
@@ -233,6 +236,14 @@ function BasketTab({ onAuthError }: TabProps) {
                 )}
             </section>
 
+            <StapleReview
+                staples={basket.staples}
+                locked={locked}
+                busy={busy}
+                onChoose={(id, buy) => run(() => setStapleChoice(id, buy))}
+                onRemaining={(buy) => run(() => setRemainingStaples(buy))}
+            />
+
             <section className="Editor__card">
                 <h2 className="Madkurv__heading">Ekstra varer og ønsker</h2>
                 <p className="Editor__hint">
@@ -317,6 +328,7 @@ function StatusCard({
 }) {
     const [delivery, setDelivery] = useState("");
     const toBuy = basket.items.filter((i) => !i.have).length;
+    const staplesMissing = basket.staples.filter((s) => s.buy === null).length;
 
     if (basket.status === "kladde")
         return (
@@ -328,9 +340,21 @@ function StatusCard({
                         fra PC’en.
                     </p>
                 </div>
-                <button type="button" className="RecipeLogin__button" disabled={busy || basket.items.length === 0} onClick={onLock}>
-                    Klar til bestilling
-                </button>
+                <div className="Madkurv__lockAction">
+                    <button
+                        type="button"
+                        className="RecipeLogin__button"
+                        disabled={busy || basket.items.length === 0 || staplesMissing > 0}
+                        onClick={onLock}
+                    >
+                        Klar til bestilling
+                    </button>
+                    {staplesMissing > 0 && (
+                        <a href="#faste-varer" className="Madkurv__lockHint">
+                            Tjek faste varer først ({staplesMissing} mangler)
+                        </a>
+                    )}
+                </div>
             </div>
         );
 
@@ -360,6 +384,94 @@ function StatusCard({
                 </button>
             </div>
         </div>
+    );
+}
+
+function StapleReview({
+    staples,
+    locked,
+    busy,
+    onChoose,
+    onRemaining,
+}: {
+    staples: BasketStaple[];
+    locked: boolean;
+    busy: boolean;
+    onChoose: (id: number, buy: boolean | null) => void;
+    onRemaining: (buy: boolean) => void;
+}) {
+    const missing = staples.filter((s) => s.buy === null).length;
+
+    return (
+        <section className={`Editor__card ${!locked && missing > 0 ? "Staples--todo" : ""}`} id="faste-varer">
+            <div className="Madkurv__listHeader">
+                <h2 className="Madkurv__heading">Faste varer</h2>
+                {staples.length > 0 &&
+                    (missing > 0 ? (
+                        <span className="Staples__count">{missing} mangler</span>
+                    ) : (
+                        <span className="AddToBasket__done">✓ Alle tjekket</span>
+                    ))}
+            </div>
+            {staples.length === 0 ? (
+                <p className="Editor__hint">
+                    Ingen faste varer. Tilføj dem under fanen <Link to="/madkurv/faste-varer">Faste varer</Link>.
+                </p>
+            ) : (
+                <>
+                    {!locked && (
+                        <p className="Editor__hint">
+                            Tag stilling til hver vare, før madkurven kan gøres klar: skal den købes denne gang, eller har I nok?
+                        </p>
+                    )}
+                    <ul className="Madkurv__plainList">
+                        {staples.map((s) => (
+                            <li key={s.id} className={s.buy === null ? "Staples__undecided" : ""}>
+                                <span>
+                                    {s.amount != null && <strong>{formatQuantity(s.amount, s.unit)} </strong>}
+                                    {s.name}
+                                    {s.note && <span className="Madkurv__muted"> · {s.note}</span>}
+                                </span>
+                                {locked ? (
+                                    <span className={s.buy ? "AddToBasket__done" : "Madkurv__muted"}>{s.buy ? "Køb" : "Har nok"}</span>
+                                ) : (
+                                    <span className="Staples__choice" role="group" aria-label={`${s.name}: køb eller har nok`}>
+                                        <button
+                                            type="button"
+                                            className={`Recipes__tag ${s.buy === true ? "is-active" : ""}`}
+                                            aria-pressed={s.buy === true}
+                                            disabled={busy}
+                                            onClick={() => onChoose(s.id, s.buy === true ? null : true)}
+                                        >
+                                            Køb
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className={`Recipes__tag ${s.buy === false ? "is-active" : ""}`}
+                                            aria-pressed={s.buy === false}
+                                            disabled={busy}
+                                            onClick={() => onChoose(s.id, s.buy === false ? null : false)}
+                                        >
+                                            Har nok
+                                        </button>
+                                    </span>
+                                )}
+                            </li>
+                        ))}
+                    </ul>
+                    {!locked && missing > 1 && (
+                        <div className="Madkurv__rowActions">
+                            <button type="button" className="Recipes__logout" disabled={busy} onClick={() => onRemaining(true)}>
+                                Køb resten ({missing})
+                            </button>
+                            <button type="button" className="Recipes__logout" disabled={busy} onClick={() => onRemaining(false)}>
+                                Har nok af resten
+                            </button>
+                        </div>
+                    )}
+                </>
+            )}
+        </section>
     );
 }
 
