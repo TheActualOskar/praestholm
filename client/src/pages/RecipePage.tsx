@@ -10,6 +10,7 @@ import {
     type Ingredient,
     type Recipe,
 } from "../api/recipes";
+import { cuisinePath } from "../api/recipeThemes";
 import Pill from "../shared/components/Pill";
 import RecipeLogin from "./RecipeLogin";
 import "./BlogPage.css";
@@ -115,7 +116,11 @@ function RecipeView({ recipe }: { recipe: Recipe }) {
             )}
 
             <div className="BlogPost__tags">
-                {recipe.cuisine && <Pill>{recipe.cuisine}</Pill>}
+                {recipe.cuisine && (
+                    <Link to={cuisinePath(recipe.cuisine)} className="Recipe__cuisineLink">
+                        <Pill className="is-cuisine">{recipe.cuisine}</Pill>
+                    </Link>
+                )}
                 {recipe.freezesWell && <Pill>❄ kan fryses</Pill>}
                 {recipe.tags.map((tag) => (
                     <Pill key={tag}>{tag}</Pill>

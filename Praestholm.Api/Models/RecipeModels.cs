@@ -92,7 +92,10 @@ public record RecipeSummaryDto(
     bool freezesWell,
     int? keepsDays,
     bool isDraft,
-    DateTime updatedAt
+    DateTime createdAt,
+    DateTime updatedAt,
+    /// <summary>Distinct ingredient names, for searching ("kokosmælk").</summary>
+    string[] ingredients
 );
 
 public record RecipeDto(

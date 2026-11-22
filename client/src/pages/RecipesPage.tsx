@@ -1,71 +1,18 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import {
-    fetchRecipes,
-    formatMinutes,
-    logoutRecipes,
-    NotLoggedInError,
-    type RecipeSummary,
-} from "../api/recipes";
-import Pill from "../shared/components/Pill";
+import { logoutRecipes, type RecipeSummary } from "../api/recipes";
+import { cuisinePath, FEATURED_CUISINES, themeFor } from "../api/recipeThemes";
+import { useRecipeList } from "../api/useRecipeList";
+import RecipeBrowser from "./RecipeBrowser";
 import RecipeLogin from "./RecipeLogin";
 import InviteForm from "./InviteForm";
 import "./BlogPage.css";
 import "./RecipesPage.css";
 import "./RecipeEditor.css";
 
-type State =
-    | { kind: "loading" }
-    | { kind: "login" }
-    | { kind: "error"; message: string }
-    | { kind: "ready"; recipes: RecipeSummary[] };
-
 export default function RecipesPage() {
-    const [state, setState] = useState<State>({ kind: "loading" });
-    const [query, setQuery] = useState("");
-    const [activeTag, setActiveTag] = useState<string | null>(null);
+    const { state, setState, reload } = useRecipeList();
     const [showInvite, setShowInvite] = useState(false);
-
-    // setState only happens asynchronously here, so it's safe to call from an effect.
-    const load = useCallback(() => {
-        fetchRecipes()
-            .then((recipes) => setState({ kind: "ready", recipes }))
-            .catch((e) =>
-                setState(
-                    e instanceof NotLoggedInError
-                        ? { kind: "login" }
-                        : { kind: "error", message: e instanceof Error ? e.message : "Fejl" },
-                ),
-            );
-    }, []);
-
-    useEffect(() => {
-        load();
-    }, [load]);
-
-    function onLoggedIn() {
-        setState({ kind: "loading" });
-        load();
-    }
-
-    const recipes = useMemo(() => (state.kind === "ready" ? state.recipes : []), [state]);
-
-    const allTags = useMemo(
-        () => [...new Set(recipes.flatMap((r) => r.tags))].sort((a, b) => a.localeCompare(b, "da")),
-        [recipes],
-    );
-
-    const visible = useMemo(() => {
-        const q = query.trim().toLowerCase();
-        return [...recipes].sort((a, b) => Number(b.isDraft) - Number(a.isDraft)).filter(
-            (r) =>
-                (!activeTag || r.tags.includes(activeTag)) &&
-                (!q ||
-                    r.title.toLowerCase().includes(q) ||
-                    r.cuisine?.toLowerCase().includes(q) ||
-                    r.tags.some((t) => t.toLowerCase().includes(q))),
-        );
-    }, [recipes, query, activeTag]);
 
     async function logout() {
         await logoutRecipes();
@@ -104,49 +51,20 @@ export default function RecipesPage() {
                     </div>
                 )}
 
-                {state.kind === "login" && <RecipeLogin onLoggedIn={onLoggedIn} />}
+                {state.kind === "login" && <RecipeLogin onLoggedIn={reload} />}
 
                 {state.kind === "error" && <div className="Blogpage__error">{state.message}</div>}
 
                 {state.kind === "ready" && (
                     <>
                         {showInvite && <InviteForm onClose={() => setShowInvite(false)} />}
-
-                        <div className="Recipes__toolbar">
-                            <input
-                                className="Recipes__search"
-                                type="search"
-                                placeholder="Søg i opskrifter…"
-                                value={query}
-                                onChange={(e) => setQuery(e.target.value)}
-                            />
-                            <div className="Recipes__tags">
-                                <button
-                                    className={`Recipes__tag ${activeTag === null ? "is-active" : ""}`}
-                                    onClick={() => setActiveTag(null)}
-                                >
-                                    Alle
-                                </button>
-                                {allTags.map((tag) => (
-                                    <button
-                                        key={tag}
-                                        className={`Recipes__tag ${activeTag === tag ? "is-active" : ""}`}
-                                        onClick={() => setActiveTag(activeTag === tag ? null : tag)}
-                                    >
-                                        {tag}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {visible.length === 0 ? (
-                            <p className="Blogpage__subtitle">Ingen opskrifter matcher.</p>
+                        <CuisineTiles recipes={state.recipes} />
+                        {state.recipes.length === 0 ? (
+                            <p className="Blogpage__subtitle">
+                                Ingen opskrifter endnu. <Link to="/opskrifter/ny">Tilføj den første.</Link>
+                            </p>
                         ) : (
-                            <div className="BlogGrid">
-                                {visible.map((r) => (
-                                    <RecipeCard key={r.slug} recipe={r} />
-                                ))}
-                            </div>
+                            <RecipeBrowser recipes={state.recipes} />
                         )}
                     </>
                 )}
@@ -155,42 +73,32 @@ export default function RecipesPage() {
     );
 }
 
-function RecipeCard({ recipe }: { recipe: RecipeSummary }) {
-    const total = formatMinutes(recipe.totalMinutes);
-    const active = formatMinutes(recipe.activeMinutes);
+function CuisineTiles({ recipes }: { recipes: RecipeSummary[] }) {
+    const tiles = useMemo(() => {
+        const counts = new Map<string, number>(FEATURED_CUISINES.map((c) => [c, 0]));
+        for (const r of recipes) if (r.cuisine) counts.set(r.cuisine, (counts.get(r.cuisine) ?? 0) + 1);
+        // Most recipes first, then alphabetical; featured empty cuisines last.
+        return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "da"));
+    }, [recipes]);
 
     return (
-        <Link to={`/opskrifter/${recipe.slug}`} className="BlogCard">
-            <div className="BlogCard__body">
-                <h3 className="BlogCard__title">{recipe.title}</h3>
-                <p className="BlogCard__desc">
-                    {[
-                        recipe.servings ? `${recipe.servings} pers.` : null,
-                        total ? `${total} i alt` : null,
-                        active && active !== total ? `${active} arbejde` : null,
-                    ]
-                        .filter(Boolean)
-                        .join(" · ")}
-                </p>
-
-                <div className="BlogCard__tags">
-                    {recipe.isDraft && <Pill className="is-draft">kladde</Pill>}
-                    {recipe.cuisine && <Pill>{recipe.cuisine}</Pill>}
-                    {recipe.freezesWell && <Pill>❄ kan fryses</Pill>}
-                    {recipe.tags.slice(0, 4).map((tag) => (
-                        <Pill key={tag}>{tag}</Pill>
-                    ))}
-                </div>
-
-                <div className="BlogCard__spacer" />
-
-                <div className="BlogCard__footer">
-                    <span className="BlogCard__date">
-                        {recipe.keepsDays ? `Holder ${recipe.keepsDays} dage` : ""}
-                    </span>
-                    <span className="BlogCard__readMore">Se opskrift →</span>
-                </div>
-            </div>
-        </Link>
+        <nav className="CuisineTiles" aria-label="Køkkener">
+            {tiles.map(([cuisine, count]) => {
+                const theme = themeFor(cuisine);
+                return (
+                    <Link
+                        key={cuisine}
+                        to={cuisinePath(cuisine)}
+                        className={`CuisineTile ${count === 0 ? "is-empty" : ""}`}
+                        style={{ "--theme": theme.color } as React.CSSProperties}
+                    >
+                        <span className="CuisineTile__name">{theme.name}</span>
+                        <span className="CuisineTile__count">
+                            {count === 0 ? "Ingen endnu" : `${count} ${count === 1 ? "opskrift" : "opskrifter"}`}
+                        </span>
+                    </Link>
+                );
+            })}
+        </nav>
     );
 }

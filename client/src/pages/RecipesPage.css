@@ -160,3 +160,203 @@
 .BlogPost__content li > p {
     margin: 0;
 }
+
+/* ---- Cuisine tiles (recipe list) ---- */
+
+.CuisineTiles {
+    margin-top: 22px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+}
+
+.CuisineTile {
+    --theme: #38d6c8;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid color-mix(in srgb, var(--theme) 35%, transparent);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--theme) 22%, transparent), rgba(255, 255, 255, 0.02));
+    text-decoration: none;
+    overflow: hidden;
+    transition: transform 120ms ease, border-color 120ms ease;
+}
+
+.CuisineTile:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--theme) 70%, transparent);
+}
+
+.CuisineTile.is-empty {
+    background: rgba(255, 255, 255, 0.02);
+    border-style: dashed;
+}
+
+.CuisineTile__name {
+    font-size: 16px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.94);
+}
+
+.CuisineTile__count {
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* ---- Browser (search, filters) ---- */
+
+.RecipeBrowser {
+    margin-top: 8px;
+}
+
+.RecipeBrowser__searchRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.RecipeBrowser__searchRow .Recipes__search {
+    flex: 1 1 260px;
+}
+
+.RecipeBrowser__sort {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.RecipeBrowser__select {
+    font: inherit;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.92);
+    padding: 9px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.RecipeBrowser__select option {
+    background: #15171c;
+}
+
+.RecipeBrowser__divider {
+    width: 1px;
+    align-self: stretch;
+    margin: 2px 4px;
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.RecipeBrowser__count {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* ---- Recipe card accent ---- */
+
+.RecipeCard.has-theme {
+    border-top: 3px solid var(--theme);
+}
+
+.Pill.is-cuisine {
+    color: rgba(255, 255, 255, 0.92);
+    border-color: color-mix(in srgb, var(--theme, #38d6c8) 50%, transparent);
+    background: color-mix(in srgb, var(--theme, #38d6c8) 18%, transparent);
+}
+
+.Recipe__cuisineLink {
+    text-decoration: none;
+}
+
+/* ---- Theme page ---- */
+
+.ThemeHero {
+    margin-top: 18px;
+    padding: 26px;
+    border-radius: 20px;
+    border: 1px solid color-mix(in srgb, var(--theme) 40%, transparent);
+    background:
+        radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--theme) 30%, transparent), transparent 60%),
+        rgba(255, 255, 255, 0.03);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.ThemeHero__text {
+    flex: 1 1 360px;
+    min-width: 0;
+}
+
+.ThemeHero__eyebrow {
+    margin: 0 0 4px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--theme);
+}
+
+.ThemeHero__title {
+    margin: 0;
+}
+
+.ThemeHero__flavours {
+    margin-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.ThemeHero__flavoursLabel {
+    margin-right: 4px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.ThemeHero__button {
+    flex-shrink: 0;
+}
+
+.ThemeEmpty {
+    margin-top: 22px;
+    padding: 22px;
+    border-radius: 16px;
+    border: 1px dashed rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.ThemeEmpty p {
+    margin: 0 0 8px;
+}
+
+@media (max-width: 640px) {
+    .Recipes__header {
+        flex-direction: column;
+    }
+
+    .Recipes__headerActions {
+        flex-wrap: wrap;
+    }
+
+    .ThemeHero {
+        padding: 18px;
+    }
+
+    .CuisineTiles {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
