@@ -12,6 +12,7 @@ public static class MadkurvEndpoints
         ["faste-varer"] = HouseholdListKind.Staple,
         ["oensker"] = HouseholdListKind.Wish,
         ["beholdning"] = HouseholdListKind.Pantry,
+        ["krydderiskab"] = HouseholdListKind.Spice,
     };
 
     public static IEndpointRouteBuilder MapMadkurvEndpoints(this IEndpointRouteBuilder app)
@@ -70,6 +71,11 @@ public static class MadkurvEndpoints
             if (MadkurvService.ValidateItem(r) is { } error) return Results.BadRequest(new { error });
             return await Run(() => s.AddItemAsync(kind, r, user.Identity?.Name, ct));
         });
+
+        app.MapPost("/api/lister/krydderiskab/forslag", (ClaimsPrincipal user, MadkurvService s, CancellationToken ct) =>
+                Run(() => s.AddSpiceSuggestionsAsync(user.Identity?.Name, ct)))
+            .AddEndpointFilter(auth)
+            .WithOpenApi();
 
         lists.MapPut("/{id:int}", async (string list, int id, ItemRequest r, MadkurvService s, CancellationToken ct) =>
         {

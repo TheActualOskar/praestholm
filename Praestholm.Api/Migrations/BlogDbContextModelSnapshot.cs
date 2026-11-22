@@ -158,6 +158,9 @@ namespace Praestholm.Api.Migrations
                     b.Property<bool>("Have")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("Ignored")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Key")
                         .IsRequired()
                         .HasMaxLength(250)

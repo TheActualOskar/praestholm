@@ -54,7 +54,7 @@ public class MadkurvService
     public async Task<BasketDto> AddRecipeAsync(AddBasketRecipeRequest request, string? username, CancellationToken ct = default)
     {
         var basket = await LoadDraftAsync(ct);
-        var recipe = await _db.Recipes.FirstOrDefaultAsync(r => r.Id == request.RecipeId, ct)
+        var recipe = await _db.Recipes.Include(r => r.Ingredients).FirstOrDefaultAsync(r => r.Id == request.RecipeId, ct)
             ?? throw new KeyNotFoundException("Opskriften findes ikke.");
 
         // Adding the same recipe twice keeps the existing line (idempotent "Læg i madkurv").
@@ -163,6 +163,7 @@ public class MadkurvService
             Note = i.note,
             Have = i.have,
             FromPantry = i.fromPantry,
+            Ignored = i.ignored,
         }));
 
         await _db.HouseholdItems
@@ -324,6 +325,38 @@ public class MadkurvService
         return true;
     }
 
+    /// <summary>Starter set for the krydderiskab; all ticked (ignored).</summary>
+    public static readonly string[] SpiceSuggestions =
+    [
+        "salt", "peber", "smør", "olie", "hvedemel", "sukker",
+        "oregano", "timian", "paprika", "spidskommen", "kanel", "karry", "chilipulver", "chiliflager",
+        "cayennepeber", "gurkemeje", "laurbærblade", "muskatnød", "garam masala", "stjerneanis",
+        "stødt koriander", "kardemomme", "nelliker", "allehånde",
+    ];
+
+    /// <summary>Adds the suggestions that are not on the krydderiskab yet.</summary>
+    public async Task<IReadOnlyList<HouseholdItemDto>> AddSpiceSuggestionsAsync(string? username, CancellationToken ct = default)
+    {
+        var existing = (await _db.HouseholdItems
+                .Where(i => i.Kind == HouseholdListKind.Spice)
+                .Select(i => i.Name)
+                .ToListAsync(ct))
+            .Select(ShoppingListBuilder.NormalizeName)
+            .ToHashSet();
+
+        var now = DateTime.UtcNow;
+        foreach (var name in SpiceSuggestions.Where(n => !existing.Contains(n)))
+        {
+            _db.HouseholdItems.Add(new HouseholdItem
+            {
+                Kind = HouseholdListKind.Spice, Name = name, Active = true, AddedBy = username, CreatedAt = now, UpdatedAt = now,
+            });
+        }
+
+        await _db.SaveChangesAsync(ct);
+        return await GetListAsync(HouseholdListKind.Spice, ct);
+    }
+
     public static string? ValidateItem(ItemRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Name) || request.Name.Length > 200) return "Skriv et navn (højst 200 tegn).";
@@ -350,7 +383,8 @@ public class MadkurvService
             .AsNoTracking()
             .Where(i => (i.Kind == HouseholdListKind.Staple && i.Active)
                         || (i.Kind == HouseholdListKind.Wish && (i.BasketId == null || i.BasketId == basket.Id))
-                        || i.Kind == HouseholdListKind.Pantry)
+                        || i.Kind == HouseholdListKind.Pantry
+                        || (i.Kind == HouseholdListKind.Spice && i.Active))
             .ToListAsync(ct);
 
         lines.AddRange(lists.Where(i => i.Kind == HouseholdListKind.Staple).Select(i => new ShoppingLine(i.Name, i.Amount, i.Unit, "Fast vare")));
@@ -359,7 +393,8 @@ public class MadkurvService
 
         var pantry = lists.Where(i => i.Kind == HouseholdListKind.Pantry).Select(i => (i.Name, i.Amount, i.Unit));
         var checks = basket.Checks.ToDictionary(c => c.Key, c => c.Have);
-        return ShoppingListBuilder.Build(lines, pantry, checks);
+        var ignore = lists.Where(i => i.Kind == HouseholdListKind.Spice).Select(i => (i.Id, i.Name));
+        return ShoppingListBuilder.Build(lines, pantry, checks, ignore);
     }
 
     private async Task<BasketDto> ToDtoAsync(Basket basket, CancellationToken ct)
@@ -368,7 +403,7 @@ public class MadkurvService
             ? await ComputeItemsAsync(basket, ct)
             : basket.Items.OrderBy(i => i.Position)
                 .Select(i => new ShoppingItemDto(i.Key, i.Name, i.Amount, i.Unit,
-                    i.Sources.Split(", ", StringSplitOptions.RemoveEmptyEntries), i.Note, i.Have, i.FromPantry))
+                    i.Sources.Split(", ", StringSplitOptions.RemoveEmptyEntries), i.Note, i.Have, i.FromPantry, i.Ignored))
                 .ToList();
 
         var wishes = await _db.HouseholdItems
