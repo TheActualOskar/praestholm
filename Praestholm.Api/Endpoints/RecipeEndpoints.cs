@@ -13,7 +13,7 @@ public static class RecipeEndpoints
     public static IEndpointRouteBuilder MapRecipeEndpoints(this IEndpointRouteBuilder app)
     {
         var config = app.ServiceProvider.GetRequiredService<IConfiguration>();
-        var apiKeyFilter = new ApiKeyEndpointFilter(config);
+        var writeFilter = new UserOrApiKeyEndpointFilter(new ApiKeyEndpointFilter(config));
 
         // ---- User login (cookie) ----
 
@@ -81,16 +81,36 @@ public static class RecipeEndpoints
             .WithOpenApi()
             .RequireAuthorization();
 
-        // ---- Write (API key, used by the Obsidian sync) ----
+        // ---- Write (logged-in user, or API key for scripts) ----
 
-        app.MapPut("/api/recipes/{slug}", async (string slug, UpsertRecipeRequest request, RecipeService service, CancellationToken ct) =>
+        app.MapPost("/api/recipes", async (UpsertRecipeRequest request, ClaimsPrincipal user, RecipeService service, CancellationToken ct) =>
+            {
+                // Slug is generated from the title; validate with a placeholder slug.
+                var error = RecipeService.Validate("new", request);
+                if (error is not null) return Results.BadRequest(new { error });
+
+                try
+                {
+                    var recipe = await service.CreateAsync(request, user.Identity?.Name, ct);
+                    return Results.Created($"/api/recipes/{recipe.slug}", recipe);
+                }
+                catch (Exception)
+                {
+                    return Results.Problem("An unexpected error occurred.");
+                }
+            })
+            .WithName("CreateRecipe")
+            .WithOpenApi()
+            .AddEndpointFilter(writeFilter);
+
+        app.MapPut("/api/recipes/{slug}", async (string slug, UpsertRecipeRequest request, ClaimsPrincipal user, RecipeService service, CancellationToken ct) =>
             {
                 var error = RecipeService.Validate(slug, request);
                 if (error is not null) return Results.BadRequest(new { error });
 
                 try
                 {
-                    var (recipe, created) = await service.UpsertAsync(slug, request, ct);
+                    var (recipe, created) = await service.UpsertAsync(slug, request, ct, user.Identity?.Name);
                     return created ? Results.Created($"/api/recipes/{recipe.slug}", recipe) : Results.Ok(recipe);
                 }
                 catch (Exception)
@@ -100,7 +120,7 @@ public static class RecipeEndpoints
             })
             .WithName("UpsertRecipe")
             .WithOpenApi()
-            .AddEndpointFilter(apiKeyFilter);
+            .AddEndpointFilter(writeFilter);
 
         app.MapDelete("/api/recipes/{slug}", async (string slug, RecipeService service, CancellationToken ct) =>
             {
@@ -115,7 +135,7 @@ public static class RecipeEndpoints
             })
             .WithName("DeleteRecipe")
             .WithOpenApi()
-            .AddEndpointFilter(apiKeyFilter);
+            .AddEndpointFilter(writeFilter);
 
         return app;
     }

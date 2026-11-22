@@ -184,6 +184,10 @@ namespace Praestholm.Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("Cuisine")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -193,6 +197,9 @@ namespace Praestholm.Api.Migrations
 
                     b.Property<string>("Intro")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDraft")
+                        .HasColumnType("bit");
 
                     b.Property<int?>("KeepsDays")
                         .HasColumnType("int");
@@ -230,6 +237,10 @@ namespace Praestholm.Api.Migrations
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 

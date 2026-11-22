@@ -29,6 +29,13 @@ public class Recipe
     public List<RecipeIngredient> Ingredients { get; set; } = [];
     public List<RecipeStep> Steps { get; set; } = [];
 
+    /// <summary>Drafts are visible to logged-in users but marked as unfinished (e.g. link imports awaiting review).</summary>
+    public bool IsDraft { get; set; }
+
+    /// <summary>Username of who created / last edited the recipe; null for the API key (scripts).</summary>
+    public string? CreatedBy { get; set; }
+    public string? UpdatedBy { get; set; }
+
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
@@ -84,6 +91,7 @@ public record RecipeSummaryDto(
     string[] tags,
     bool freezesWell,
     int? keepsDays,
+    bool isDraft,
     DateTime updatedAt
 );
 
@@ -104,11 +112,17 @@ public record RecipeDto(
     StepDto[] steps,
     string? leftovers,
     string? notes,
+    bool isDraft,
+    string? createdBy,
+    string? updatedBy,
     DateTime createdAt,
     DateTime updatedAt
 );
 
-/// <summary>Create-or-replace a recipe by slug. Ingredients and steps are replaced as a whole, in list order.</summary>
+/// <summary>
+/// Create-or-replace a recipe. Ingredients and steps are replaced as a whole, in list order.
+/// IsDraft: null keeps the current state (new recipes are published).
+/// </summary>
 public record UpsertRecipeRequest(
     string Title,
     string? SourceUrl,
@@ -123,5 +137,6 @@ public record UpsertRecipeRequest(
     IngredientDto[]? Ingredients,
     StepDto[]? Steps,
     string? Leftovers,
-    string? Notes
+    string? Notes,
+    bool? IsDraft = null
 );

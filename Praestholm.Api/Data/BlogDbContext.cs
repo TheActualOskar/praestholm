@@ -53,6 +53,8 @@ public class BlogDbContext : DbContext, IDataProtectionKeyContext
             entity.Property(e => e.Intro).HasColumnType("nvarchar(max)");
             entity.Property(e => e.Leftovers).HasColumnType("nvarchar(max)");
             entity.Property(e => e.Notes).HasColumnType("nvarchar(max)");
+            entity.Property(e => e.CreatedBy).HasMaxLength(50);
+            entity.Property(e => e.UpdatedBy).HasMaxLength(50);
             entity.HasMany(e => e.Ingredients)
                 .WithOne()
                 .HasForeignKey(e => e.RecipeId)

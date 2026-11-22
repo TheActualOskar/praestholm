@@ -10,6 +10,7 @@ export type RecipeSummary = {
     tags: string[];
     freezesWell: boolean;
     keepsDays: number | null;
+    isDraft: boolean;
     updatedAt: string;
 };
 
@@ -32,7 +33,28 @@ export type Recipe = RecipeSummary & {
     steps: Step[];
     leftovers: string | null;
     notes: string | null;
+    createdBy: string | null;
+    updatedBy: string | null;
     createdAt: string;
+};
+
+/** Body for create/update. */
+export type RecipeInput = {
+    title: string;
+    sourceUrl: string | null;
+    cuisine: string | null;
+    servings: number | null;
+    totalMinutes: number | null;
+    activeMinutes: number | null;
+    tags: string[];
+    freezesWell: boolean;
+    keepsDays: number | null;
+    intro: string | null;
+    ingredients: Ingredient[];
+    steps: Step[];
+    leftovers: string | null;
+    notes: string | null;
+    isDraft: boolean;
 };
 
 /** Groups consecutive items by their `section` (null = no heading), keeping order. */
@@ -87,6 +109,35 @@ export function fetchRecipes(): Promise<RecipeSummary[]> {
 
 export function fetchRecipe(slug: string): Promise<Recipe> {
     return getJson(`/api/recipes/${encodeURIComponent(slug)}`);
+}
+
+async function sendJson<T>(url: string, method: string, body?: unknown): Promise<T> {
+    const res = await fetch(url, {
+        method,
+        credentials: "same-origin",
+        headers: body === undefined ? undefined : { "Content-Type": "application/json" },
+        body: body === undefined ? undefined : JSON.stringify(body),
+    });
+    if (res.status === 401) throw new NotLoggedInError();
+    if (res.status === 400) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error ?? "Ugyldige data");
+    }
+    if (res.status === 404) throw new Error("Opskriften findes ikke");
+    if (!res.ok) throw new Error("Kunne ikke gemme opskriften");
+    return (res.status === 204 ? undefined : await res.json()) as T;
+}
+
+export function createRecipe(input: RecipeInput): Promise<Recipe> {
+    return sendJson("/api/recipes", "POST", input);
+}
+
+export function updateRecipe(slug: string, input: RecipeInput): Promise<Recipe> {
+    return sendJson(`/api/recipes/${encodeURIComponent(slug)}`, "PUT", input);
+}
+
+export function deleteRecipe(slug: string): Promise<void> {
+    return sendJson(`/api/recipes/${encodeURIComponent(slug)}`, "DELETE");
 }
 
 /** `login` is the username or the email. */
