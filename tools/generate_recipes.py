@@ -6,11 +6,11 @@ For each waiting link the script claims it, downloads the page, asks Claude
 a draft and marks the link as done (or failed, with the reason). Review and
 publish the drafts on the site.
 
-Run (installed as `praestholm-generer` in ~/.local/bin, see tools/praestholm-generer):
-    praestholm-generer             # all waiting links; asks for the API key the first time
-    praestholm-generer --limit 1   # just one
-    praestholm-generer --dry-run   # generate and print, save nothing
-    praestholm-generer --setup     # change the stored API key or site address
+Run (installed as `praestholm-update` in ~/.local/bin, see tools/praestholm-update):
+    praestholm-update             # all waiting links; asks for the API key the first time
+    praestholm-update --limit 1   # just one
+    praestholm-update --dry-run   # generate and print, save nothing
+    praestholm-update --setup     # change the stored API key or site address
 
 The key lives in ~/.config/praestholm/api_key (only readable by you); the site
 address in ~/.config/praestholm/url (default https://praestholm.dk).
@@ -393,7 +393,7 @@ def main() -> int:
             return rc
         base, key = load_config()
     if not key:
-        print("Ingen API-nøgle. Kør først: praestholm-generer --setup (i en terminal)", file=sys.stderr)
+        print("Ingen API-nøgle. Kør først: praestholm-update --setup (i en terminal)", file=sys.stderr)
         return 2
     if not shutil.which("claude"):
         print("Kommandoen `claude` blev ikke fundet på PATH.", file=sys.stderr)

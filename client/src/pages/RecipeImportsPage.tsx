@@ -85,7 +85,7 @@ export default function RecipeImportsPage() {
                             </div>
                             {waiting > 0 && (
                                 <p className="Editor__hint">
-                                    Kør <code>praestholm-generer</code> i en terminal på PC’en for at lave dem om til kladder.
+                                    Kør <code>praestholm-update</code> i en terminal på PC’en for at lave dem om til kladder.
                                 </p>
                             )}
                             {items === null ? (
