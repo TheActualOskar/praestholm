@@ -101,6 +101,7 @@ export const removeBasketExtra = (id: number) => call<Basket>(`/api/madkurv/ekst
 export const setHave = (key: string, have: boolean) => call<Basket>("/api/madkurv/har", "PUT", { key, have });
 export const lockBasket = () => call<Basket>("/api/madkurv/klar", "POST");
 export const reopenBasket = () => call<Basket>("/api/madkurv/ret-igen", "POST");
+export const clearBasket = () => call<Basket>("/api/madkurv/toem", "POST");
 export const markOrdered = (deliveryDate: string | null) => call<Basket>("/api/madkurv/bestilt", "POST", { deliveryDate });
 export const fetchHistory = () => call<BasketSummary[]>("/api/madkurv/historik");
 export const fetchBasketById = (id: number) => call<Basket>(`/api/madkurv/${id}`);
