@@ -239,6 +239,31 @@ namespace Praestholm.Api.Migrations
                     b.ToTable("BasketRecipes");
                 });
 
+            modelBuilder.Entity("Praestholm.Api.Models.BasketStapleChoice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BasketId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Buy")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("StapleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BasketId", "StapleId")
+                        .IsUnique();
+
+                    b.ToTable("BasketStapleChoices");
+                });
+
             modelBuilder.Entity("Praestholm.Api.Models.BlogPost", b =>
                 {
                     b.Property<int>("Id")
@@ -703,6 +728,15 @@ namespace Praestholm.Api.Migrations
                     b.Navigation("Recipe");
                 });
 
+            modelBuilder.Entity("Praestholm.Api.Models.BasketStapleChoice", b =>
+                {
+                    b.HasOne("Praestholm.Api.Models.Basket", null)
+                        .WithMany("StapleChoices")
+                        .HasForeignKey("BasketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Praestholm.Api.Models.HouseholdItem", b =>
                 {
                     b.HasOne("Praestholm.Api.Models.Basket", null)
@@ -749,6 +783,8 @@ namespace Praestholm.Api.Migrations
                     b.Navigation("Items");
 
                     b.Navigation("Recipes");
+
+                    b.Navigation("StapleChoices");
                 });
 
             modelBuilder.Entity("Praestholm.Api.Models.Recipe", b =>

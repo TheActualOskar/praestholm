@@ -425,3 +425,39 @@ a.Madkurv__recipeTitle:hover {
     color: #ff8a8a;
     border-color: rgba(255, 138, 138, 0.4);
 }
+
+/* ---- Faste varer review ---- */
+
+.Staples--todo {
+    border-color: rgba(255, 200, 87, 0.4);
+}
+
+.Staples__count {
+    font-size: 13px;
+    font-weight: 800;
+    color: #ffd27a;
+}
+
+.Staples__undecided > span:first-child::before {
+    content: "• ";
+    color: #ffd27a;
+}
+
+.Staples__choice {
+    display: inline-flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.Madkurv__lockAction {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+.Madkurv__lockHint {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #ffd27a;
+}

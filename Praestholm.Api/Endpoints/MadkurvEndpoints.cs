@@ -48,6 +48,11 @@ public static class MadkurvEndpoints
                 ? Results.BadRequest(new { error = "Ugyldig vare." })
                 : await Run(() => s.SetCheckAsync(r, ct)));
 
+        basket.MapPut("/faste-varer/{stapleId:int}", (int stapleId, StapleChoiceRequest r, MadkurvService s, CancellationToken ct) =>
+            Run(() => s.SetStapleChoiceAsync(stapleId, r.Buy, ct)));
+        basket.MapPost("/faste-varer/resten", (AllStaplesRequest r, MadkurvService s, CancellationToken ct) =>
+            Run(() => s.SetRemainingStaplesAsync(r.Buy, ct)));
+
         basket.MapPost("/klar", (MadkurvService s, CancellationToken ct) => Run(() => s.LockAsync(ct)));
         basket.MapPost("/ret-igen", (MadkurvService s, CancellationToken ct) => Run(() => s.ReopenAsync(ct)));
         basket.MapPost("/toem", (MadkurvService s, CancellationToken ct) => Run(() => s.ClearAsync(ct)));

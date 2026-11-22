@@ -33,6 +33,21 @@ public class Basket
 
     /// <summary>The shopping list frozen when the basket was locked; empty while it is a draft.</summary>
     public List<BasketItem> Items { get; set; } = [];
+
+    /// <summary>Køb / har nok for each faste vare; every active one needs a choice before locking.</summary>
+    public List<BasketStapleChoice> StapleChoices { get; set; } = [];
+}
+
+/// <summary>
+/// Whether a faste vare is bought in this basket. StapleId is a plain id (no FK) so deleting a
+/// staple never cascades into baskets; choices for deleted staples are ignored.
+/// </summary>
+public class BasketStapleChoice
+{
+    public int Id { get; set; }
+    public int BasketId { get; set; }
+    public int StapleId { get; set; }
+    public bool Buy { get; set; }
 }
 
 public class BasketRecipe
@@ -142,6 +157,13 @@ public class HouseholdItem
 
 public record BasketRecipeDto(int id, int? recipeId, string? slug, string title, int servings, int? recipeServings, int? day, string? note, string? addedBy);
 
+/// <param name="buy">true = køb, false = har nok, null = not checked yet.</param>
+public record BasketStapleDto(int id, string name, decimal? amount, string? unit, string? note, bool? buy);
+
+public record StapleChoiceRequest(bool? Buy);
+
+public record AllStaplesRequest(bool Buy);
+
 public record BasketExtraDto(int id, string name, decimal? amount, string? unit, string? note, string? addedBy);
 
 /// <param name="key">Stable id of the merged item (name|unit group); used for "har det".</param>
@@ -164,7 +186,8 @@ public record BasketDto(
     BasketRecipeDto[] recipes,
     BasketExtraDto[] extras,
     HouseholdItemDto[] wishes,
-    ShoppingItemDto[] items
+    ShoppingItemDto[] items,
+    BasketStapleDto[] staples
 );
 
 public record BasketSummaryDto(int id, string status, DateTime createdAt, DateTime? orderedAt, DateOnly? deliveryDate, string[] recipes, int itemCount);
