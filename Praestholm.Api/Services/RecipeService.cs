@@ -37,7 +37,7 @@ public partial class RecipeService
 
     /// <returns>The saved recipe and whether it was newly created.</returns>
     public async Task<(RecipeDto recipe, bool created)> UpsertAsync(
-        string slug, UpsertRecipeRequest request, CancellationToken ct = default)
+        string slug, UpsertRecipeRequest request, CancellationToken ct = default, string? username = null)
     {
         var recipe = await _db.Recipes
             .Include(r => r.Ingredients)
@@ -49,9 +49,13 @@ public partial class RecipeService
 
         if (recipe is null)
         {
-            recipe = new Recipe { Slug = slug, CreatedAt = now };
+            recipe = new Recipe { Slug = slug, CreatedAt = now, CreatedBy = username };
             _db.Recipes.Add(recipe);
         }
+
+        if (request.IsDraft is { } isDraft)
+            recipe.IsDraft = isDraft;
+        recipe.UpdatedBy = username;
 
         recipe.Title = request.Title.Trim();
         recipe.SourceUrl = Clean(request.SourceUrl);
@@ -91,6 +95,42 @@ public partial class RecipeService
         await _db.SaveChangesAsync(ct);
         return (ToDto(recipe), created);
     }
+
+    /// <summary>Creates a recipe with a slug derived from the title ("lasagne", "lasagne-2", …).</summary>
+    public async Task<RecipeDto> CreateAsync(UpsertRecipeRequest request, string? username, CancellationToken ct = default)
+    {
+        var baseSlug = Slugify(request.Title);
+        if (baseSlug.Length == 0) baseSlug = "opskrift";
+        if (baseSlug.Length > 190) baseSlug = baseSlug[..190].TrimEnd('-');
+
+        var taken = await _db.Recipes
+            .Where(r => r.Slug == baseSlug || r.Slug.StartsWith(baseSlug + "-"))
+            .Select(r => r.Slug)
+            .ToListAsync(ct);
+
+        var slug = baseSlug;
+        for (var n = 2; taken.Contains(slug); n++)
+            slug = $"{baseSlug}-{n}";
+
+        var (recipe, _) = await UpsertAsync(slug, request, ct, username);
+        return recipe;
+    }
+
+    /// <summary>Same rules as the Obsidian import: lowercase, æ/ø/å spelled out, dashes between words.</summary>
+    public static string Slugify(string text)
+    {
+        var s = text.Trim().ToLowerInvariant()
+            .Replace("æ", "ae").Replace("ø", "oe").Replace("å", "aa");
+        var normalized = s.Normalize(System.Text.NormalizationForm.FormD);
+        var ascii = new string(normalized
+            .Where(c => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c)
+                        != System.Globalization.UnicodeCategory.NonSpacingMark)
+            .ToArray());
+        return NonSlugChars().Replace(ascii, "-").Trim('-');
+    }
+
+    [GeneratedRegex("[^a-z0-9]+")]
+    private static partial Regex NonSlugChars();
 
     public async Task<bool> DeleteAsync(string slug, CancellationToken ct = default)
     {
@@ -171,7 +211,7 @@ public partial class RecipeService
 
     private static RecipeSummaryDto ToSummary(Recipe r) => new(
         r.Id, r.Title, r.Slug, r.SourceUrl, r.Cuisine, r.Servings, r.TotalMinutes, r.ActiveMinutes,
-        SplitTags(r.Tags), r.FreezesWell, r.KeepsDays, r.UpdatedAt);
+        SplitTags(r.Tags), r.FreezesWell, r.KeepsDays, r.IsDraft, r.UpdatedAt);
 
     private static RecipeDto ToDto(Recipe r) => new(
         r.Id, r.Title, r.Slug, r.SourceUrl, r.Cuisine, r.Servings, r.TotalMinutes, r.ActiveMinutes,
@@ -180,5 +220,5 @@ public partial class RecipeService
             .Select(i => new IngredientDto(i.Section, i.Amount, i.Unit, i.Name, i.Note)).ToArray(),
         r.Steps.OrderBy(s => s.Position)
             .Select(s => new StepDto(s.Section, s.Text)).ToArray(),
-        r.Leftovers, r.Notes, r.CreatedAt, r.UpdatedAt);
+        r.Leftovers, r.Notes, r.IsDraft, r.CreatedBy, r.UpdatedBy, r.CreatedAt, r.UpdatedAt);
 }

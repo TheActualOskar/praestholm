@@ -12,6 +12,7 @@ import RecipeLogin from "./RecipeLogin";
 import InviteForm from "./InviteForm";
 import "./BlogPage.css";
 import "./RecipesPage.css";
+import "./RecipeEditor.css";
 
 type State =
     | { kind: "loading" }
@@ -56,7 +57,7 @@ export default function RecipesPage() {
 
     const visible = useMemo(() => {
         const q = query.trim().toLowerCase();
-        return recipes.filter(
+        return [...recipes].sort((a, b) => Number(b.isDraft) - Number(a.isDraft)).filter(
             (r) =>
                 (!activeTag || r.tags.includes(activeTag)) &&
                 (!q ||
@@ -83,6 +84,9 @@ export default function RecipesPage() {
                     </div>
                     {state.kind === "ready" && (
                         <div className="Recipes__headerActions">
+                            <Link to="/opskrifter/ny" className="RecipeLogin__button">
+                                + Ny opskrift
+                            </Link>
                             <button className="Recipes__logout" onClick={() => setShowInvite(!showInvite)}>
                                 Inviter
                             </button>
@@ -170,6 +174,7 @@ function RecipeCard({ recipe }: { recipe: RecipeSummary }) {
                 </p>
 
                 <div className="BlogCard__tags">
+                    {recipe.isDraft && <Pill className="is-draft">kladde</Pill>}
                     {recipe.cuisine && <Pill>{recipe.cuisine}</Pill>}
                     {recipe.freezesWell && <Pill>❄ kan fryses</Pill>}
                     {recipe.tags.slice(0, 4).map((tag) => (

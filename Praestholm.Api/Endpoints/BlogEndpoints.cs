@@ -103,16 +103,34 @@ public class ApiKeyEndpointFilter : IEndpointFilter
             ?? throw new InvalidOperationException("ApiKey is not configured.");
     }
 
+    public bool IsValid(HttpContext http) =>
+        // An unset key must never match: otherwise an empty X-Api-Key header would be accepted.
+        !string.IsNullOrWhiteSpace(_apiKey)
+        && http.Request.Headers.TryGetValue("X-Api-Key", out var providedKey)
+        && CryptographicOperations.FixedTimeEquals(
+            Encoding.UTF8.GetBytes(providedKey.ToString()), Encoding.UTF8.GetBytes(_apiKey));
+
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
-        // An unset key must never match: otherwise an empty X-Api-Key header would be accepted.
-        if (string.IsNullOrWhiteSpace(_apiKey)
-            || !context.HttpContext.Request.Headers.TryGetValue("X-Api-Key", out var providedKey)
-            || !CryptographicOperations.FixedTimeEquals(
-                Encoding.UTF8.GetBytes(providedKey.ToString()), Encoding.UTF8.GetBytes(_apiKey)))
-        {
+        if (!IsValid(context.HttpContext))
             return Results.Unauthorized();
-        }
+
+        return await next(context);
+    }
+}
+
+/// <summary>Allows a logged-in user (cookie) or a script with the API key.</summary>
+public class UserOrApiKeyEndpointFilter : IEndpointFilter
+{
+    private readonly ApiKeyEndpointFilter _apiKey;
+
+    public UserOrApiKeyEndpointFilter(ApiKeyEndpointFilter apiKey) => _apiKey = apiKey;
+
+    public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
+    {
+        var http = context.HttpContext;
+        if (http.User.Identity?.IsAuthenticated != true && !_apiKey.IsValid(http))
+            return Results.Unauthorized();
 
         return await next(context);
     }

@@ -1,0 +1,348 @@
+/* =========================================
+   Recipe editor (form for creating/editing)
+   ========================================= */
+
+.Editor {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 8px;
+}
+
+.Editor__card {
+    margin: 0;
+    padding: 20px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+}
+
+.Editor__legend {
+    padding: 0 6px;
+    font-size: 17px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.Editor__hint,
+.Editor__fieldHint {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.58);
+}
+
+.Editor__field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.Editor__label {
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.82);
+}
+
+.Editor__input {
+    width: 100%;
+    box-sizing: border-box;
+    font: inherit;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.92);
+    padding: 9px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(0, 0, 0, 0.35);
+    outline: none;
+    min-width: 0;
+}
+
+.Editor__input:focus {
+    border-color: rgba(56, 214, 200, 0.55);
+}
+
+.Editor__input::placeholder {
+    color: rgba(255, 255, 255, 0.32);
+}
+
+.Editor__textarea {
+    resize: vertical;
+    line-height: 1.45;
+}
+
+.Editor__grid2,
+.Editor__grid4 {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.Editor__grid4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.Editor__check {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    cursor: pointer;
+}
+
+.Editor__check input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent, #38d6c8);
+}
+
+/* ---- Tags ---- */
+
+.Editor__tags {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.Editor__tagRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.Editor__tagInput {
+    flex: 1;
+    min-width: 140px;
+    width: auto;
+}
+
+/* ---- Rows ---- */
+
+.Editor__rows {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.Editor__row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.Editor__row.is-heading {
+    margin-top: 8px;
+}
+
+.Editor__headingInput {
+    flex: 1;
+    font-weight: 800;
+}
+
+.Editor__ingredient {
+    flex: 1;
+    display: grid;
+    gap: 6px;
+    grid-template-columns: 4.5rem 5.5rem minmax(0, 1.4fr) minmax(0, 1fr);
+    min-width: 0;
+}
+
+.Editor__step {
+    flex: 1;
+    display: flex;
+    gap: 8px;
+    min-width: 0;
+}
+
+.Editor__stepNumber {
+    flex: 0 0 1.8rem;
+    padding-top: 9px;
+    font-weight: 800;
+    color: var(--accent, #38d6c8);
+    text-align: right;
+}
+
+.Editor__rowButtons {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+.Editor__iconButton {
+    font: inherit;
+    font-size: 15px;
+    width: 30px;
+    height: 38px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+}
+
+.Editor__iconButton:hover {
+    color: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.Editor__rowActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.Editor__link {
+    align-self: flex-start;
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--accent, #38d6c8);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.Editor__paste {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px dashed rgba(255, 255, 255, 0.18);
+}
+
+/* ---- Actions ---- */
+
+.Editor__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.Editor__actions .Editor__danger {
+    margin-left: auto;
+}
+
+.Editor__danger {
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 9px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 138, 138, 0.35);
+    background: transparent;
+    color: #ff8a8a;
+    cursor: pointer;
+}
+
+.Editor__error {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #ff8a8a;
+}
+
+.Editor button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+/* ---- Small screens ---- */
+
+@media (max-width: 640px) {
+    .Editor__card {
+        padding: 14px;
+    }
+
+    .Editor__grid2,
+    .Editor__grid4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .Editor__grid2 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* Amount, unit and name on one line, note below; buttons stacked at the side. */
+    .Editor__ingredient {
+        grid-template-columns: 3.4rem 4.2rem minmax(0, 1fr);
+    }
+
+    .Editor__ingredient > :nth-child(4) {
+        grid-column: 1 / -1;
+    }
+
+    .Editor__ingredient .Editor__input,
+    .Editor__headingInput {
+        padding: 8px 9px;
+        font-size: 14.5px;
+    }
+
+    .Editor__row {
+        gap: 4px;
+    }
+
+    .Editor__rowButtons {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .Editor__iconButton {
+        width: 26px;
+        height: 24px;
+        font-size: 13px;
+    }
+
+    .Editor__stepNumber {
+        flex-basis: 1.3rem;
+    }
+}
+
+/* ---- Draft markers on list/detail pages ---- */
+
+.Recipe__draftBanner {
+    margin-top: 14px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 200, 87, 0.35);
+    background: rgba(255, 200, 87, 0.08);
+    font-size: 14px;
+    color: #ffd27a;
+}
+
+.Pill.is-draft {
+    color: #ffd27a;
+    border-color: rgba(255, 200, 87, 0.35);
+    background: rgba(255, 200, 87, 0.10);
+}
+
+.Recipe__actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.Recipes__headerActions a {
+    text-decoration: none;
+}
+
+a.Recipes__logout,
+a.RecipeLogin__button {
+    display: inline-block;
+    text-decoration: none;
+}

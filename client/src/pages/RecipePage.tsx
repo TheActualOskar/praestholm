@@ -14,6 +14,7 @@ import Pill from "../shared/components/Pill";
 import RecipeLogin from "./RecipeLogin";
 import "./BlogPage.css";
 import "./RecipesPage.css";
+import "./RecipeEditor.css";
 
 type State =
     | { kind: "loading" }
@@ -96,6 +97,12 @@ function RecipeView({ recipe }: { recipe: Recipe }) {
         <>
             <h1 className="BlogPost__articleTitle">{recipe.title}</h1>
 
+            {recipe.isDraft && (
+                <div className="Recipe__draftBanner">
+                    Kladde: opskriften er ikke færdig endnu. <Link to={`/opskrifter/${recipe.slug}/rediger`}>Gennemse og udgiv</Link>
+                </div>
+            )}
+
             {meta.length > 0 && (
                 <div className="BlogPost__meta">
                     {meta.map((m, i) => (
@@ -113,6 +120,12 @@ function RecipeView({ recipe }: { recipe: Recipe }) {
                 {recipe.tags.map((tag) => (
                     <Pill key={tag}>{tag}</Pill>
                 ))}
+            </div>
+
+            <div className="Recipe__actions">
+                <Link to={`/opskrifter/${recipe.slug}/rediger`} className="Recipes__logout">
+                    Rediger
+                </Link>
             </div>
 
             {recipe.sourceUrl && sourceHost && (
