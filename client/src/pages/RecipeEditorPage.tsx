@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
     createRecipe,
     deleteRecipe,
@@ -87,12 +87,12 @@ function stepRows(items: Step[]): StepRow[] {
     return rows;
 }
 
-function initialForm(recipe: Recipe | null): FormState {
+function initialForm(recipe: Recipe | null, defaultCuisine = ""): FormState {
     const str = (n: number | null) => (n == null ? "" : String(n));
     return {
         title: recipe?.title ?? "",
         sourceUrl: recipe?.sourceUrl ?? "",
-        cuisine: recipe?.cuisine ?? "",
+        cuisine: recipe ? (recipe.cuisine ?? "") : defaultCuisine,
         servings: recipe ? str(recipe.servings) : "4",
         totalMinutes: str(recipe?.totalMinutes ?? null),
         activeMinutes: str(recipe?.activeMinutes ?? null),
@@ -260,7 +260,8 @@ function RecipeForm({
     tagSuggestions: string[];
 }) {
     const navigate = useNavigate();
-    const [initial] = useState(() => initialForm(recipe));
+    const [searchParams] = useSearchParams();
+    const [initial] = useState(() => initialForm(recipe, searchParams.get("koekken") ?? ""));
     const [form, setForm] = useState(initial);
     const [error, setError] = useState<string | null>(null);
     const [busy, setBusy] = useState(false);

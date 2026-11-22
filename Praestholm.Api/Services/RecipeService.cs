@@ -21,7 +21,16 @@ public partial class RecipeService
             .OrderBy(r => r.Title)
             .ToListAsync(ct);
 
-        return recipes.Select(ToSummary).ToList();
+        var names = await _db.RecipeIngredients
+            .AsNoTracking()
+            .OrderBy(i => i.Position)
+            .Select(i => new { i.RecipeId, i.Name })
+            .ToListAsync(ct);
+        var namesByRecipe = names
+            .GroupBy(n => n.RecipeId)
+            .ToDictionary(g => g.Key, g => g.Select(n => n.Name).Distinct(StringComparer.OrdinalIgnoreCase).ToArray());
+
+        return recipes.Select(r => ToSummary(r, namesByRecipe.GetValueOrDefault(r.Id, []))).ToList();
     }
 
     public async Task<RecipeDto?> GetBySlugAsync(string slug, CancellationToken ct = default)
@@ -209,9 +218,9 @@ public partial class RecipeService
             ? []
             : tags.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
-    private static RecipeSummaryDto ToSummary(Recipe r) => new(
+    private static RecipeSummaryDto ToSummary(Recipe r, string[] ingredientNames) => new(
         r.Id, r.Title, r.Slug, r.SourceUrl, r.Cuisine, r.Servings, r.TotalMinutes, r.ActiveMinutes,
-        SplitTags(r.Tags), r.FreezesWell, r.KeepsDays, r.IsDraft, r.UpdatedAt);
+        SplitTags(r.Tags), r.FreezesWell, r.KeepsDays, r.IsDraft, r.CreatedAt, r.UpdatedAt, ingredientNames);
 
     private static RecipeDto ToDto(Recipe r) => new(
         r.Id, r.Title, r.Slug, r.SourceUrl, r.Cuisine, r.Servings, r.TotalMinutes, r.ActiveMinutes,

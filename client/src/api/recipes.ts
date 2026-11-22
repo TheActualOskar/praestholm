@@ -1,4 +1,5 @@
-export type RecipeSummary = {
+/** Fields shared by list and detail responses. */
+type RecipeBase = {
     id: number;
     title: string;
     slug: string;
@@ -11,7 +12,13 @@ export type RecipeSummary = {
     freezesWell: boolean;
     keepsDays: number | null;
     isDraft: boolean;
+    createdAt: string;
     updatedAt: string;
+};
+
+export type RecipeSummary = RecipeBase & {
+    /** Distinct ingredient names, for search. */
+    ingredients: string[];
 };
 
 export type Ingredient = {
@@ -27,7 +34,7 @@ export type Step = {
     text: string;
 };
 
-export type Recipe = RecipeSummary & {
+export type Recipe = RecipeBase & {
     intro: string | null;
     ingredients: Ingredient[];
     steps: Step[];
@@ -35,7 +42,6 @@ export type Recipe = RecipeSummary & {
     notes: string | null;
     createdBy: string | null;
     updatedBy: string | null;
-    createdAt: string;
 };
 
 /** Body for create/update. */
