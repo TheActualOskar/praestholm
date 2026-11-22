@@ -18,6 +18,7 @@ public class BlogDbContext : DbContext, IDataProtectionKeyContext
     public DbSet<BasketCheck> BasketChecks => Set<BasketCheck>();
     public DbSet<BasketItem> BasketItems => Set<BasketItem>();
     public DbSet<HouseholdItem> HouseholdItems => Set<HouseholdItem>();
+    public DbSet<RecipeImport> RecipeImports => Set<RecipeImport>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Invite> Invites => Set<Invite>();
 
@@ -141,6 +142,16 @@ public class BlogDbContext : DbContext, IDataProtectionKeyContext
             entity.Property(e => e.Note).HasMaxLength(200);
             entity.Property(e => e.AddedBy).HasMaxLength(50);
             entity.HasOne<Basket>().WithMany().HasForeignKey(e => e.BasketId).OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<RecipeImport>(entity =>
+        {
+            entity.HasIndex(e => e.Status);
+            entity.Property(e => e.Url).HasMaxLength(500);
+            entity.Property(e => e.Comment).HasMaxLength(500);
+            entity.Property(e => e.Error).HasMaxLength(1000);
+            entity.Property(e => e.RecipeSlug).HasMaxLength(200);
+            entity.Property(e => e.AddedBy).HasMaxLength(50);
         });
 
         modelBuilder.Entity<BlogPost>(entity =>

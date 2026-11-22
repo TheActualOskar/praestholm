@@ -334,3 +334,94 @@ a.Madkurv__recipeTitle:hover {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
+
+/* ---- Til generering (recipe import queue) ---- */
+
+.Imports__form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.Imports {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.Imports__item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.Imports__item:first-child {
+    border-top: 0;
+}
+
+.Imports__main {
+    flex: 1 1 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.Imports__top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.Imports__url {
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.92);
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.Imports__url:hover {
+    color: var(--accent, #38d6c8);
+}
+
+.Imports__comment {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.Imports__error {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.Imports__status {
+    flex-shrink: 0;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 3px 9px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.Imports__status.is-behandles {
+    color: #ffd27a;
+    border-color: rgba(255, 200, 87, 0.4);
+}
+
+.Imports__status.is-faerdig {
+    color: var(--accent, #38d6c8);
+    border-color: rgba(56, 214, 200, 0.4);
+}
+
+.Imports__status.is-fejlet {
+    color: #ff8a8a;
+    border-color: rgba(255, 138, 138, 0.4);
+}

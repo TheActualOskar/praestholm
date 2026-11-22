@@ -37,6 +37,9 @@ export default function RecipesPage() {
                             <Link to="/opskrifter/ny" className="Recipes__logout">
                                 + Ny opskrift
                             </Link>
+                            <Link to="/opskrifter/generering" className="Recipes__logout">
+                                Til generering
+                            </Link>
                             <button className="Recipes__logout" onClick={() => setShowInvite(!showInvite)}>
                                 Inviter
                             </button>
