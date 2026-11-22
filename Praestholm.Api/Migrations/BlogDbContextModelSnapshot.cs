@@ -181,18 +181,27 @@ namespace Praestholm.Api.Migrations
                     b.Property<int?>("ActiveMinutes")
                         .HasColumnType("int");
 
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Cuisine")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("FreezesWell")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Intro")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("KeepsDays")
                         .HasColumnType("int");
+
+                    b.Property<string>("Leftovers")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Servings")
                         .HasColumnType("int");
@@ -224,10 +233,84 @@ namespace Praestholm.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Cuisine");
+
                     b.HasIndex("Slug")
                         .IsUnique();
 
                     b.ToTable("Recipes");
+                });
+
+            modelBuilder.Entity("Praestholm.Api.Models.RecipeIngredient", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("Amount")
+                        .HasPrecision(10, 3)
+                        .HasColumnType("decimal(10,3)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RecipeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Section")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Unit")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecipeId", "Position");
+
+                    b.ToTable("RecipeIngredients");
+                });
+
+            modelBuilder.Entity("Praestholm.Api.Models.RecipeStep", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RecipeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Section")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecipeId", "Position");
+
+                    b.ToTable("RecipeSteps");
                 });
 
             modelBuilder.Entity("Praestholm.Api.Models.User", b =>
@@ -276,6 +359,31 @@ namespace Praestholm.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("InvitedBy");
+                });
+
+            modelBuilder.Entity("Praestholm.Api.Models.RecipeIngredient", b =>
+                {
+                    b.HasOne("Praestholm.Api.Models.Recipe", null)
+                        .WithMany("Ingredients")
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Praestholm.Api.Models.RecipeStep", b =>
+                {
+                    b.HasOne("Praestholm.Api.Models.Recipe", null)
+                        .WithMany("Steps")
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Praestholm.Api.Models.Recipe", b =>
+                {
+                    b.Navigation("Ingredients");
+
+                    b.Navigation("Steps");
                 });
 #pragma warning restore 612, 618
         }

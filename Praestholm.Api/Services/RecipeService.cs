@@ -26,7 +26,12 @@ public partial class RecipeService
 
     public async Task<RecipeDto?> GetBySlugAsync(string slug, CancellationToken ct = default)
     {
-        var recipe = await _db.Recipes.AsNoTracking().FirstOrDefaultAsync(r => r.Slug == slug, ct);
+        var recipe = await _db.Recipes
+            .AsNoTracking()
+            .Include(r => r.Ingredients)
+            .Include(r => r.Steps)
+            .AsSplitQuery()
+            .FirstOrDefaultAsync(r => r.Slug == slug, ct);
         return recipe is null ? null : ToDto(recipe);
     }
 
@@ -34,7 +39,11 @@ public partial class RecipeService
     public async Task<(RecipeDto recipe, bool created)> UpsertAsync(
         string slug, UpsertRecipeRequest request, CancellationToken ct = default)
     {
-        var recipe = await _db.Recipes.FirstOrDefaultAsync(r => r.Slug == slug, ct);
+        var recipe = await _db.Recipes
+            .Include(r => r.Ingredients)
+            .Include(r => r.Steps)
+            .AsSplitQuery()
+            .FirstOrDefaultAsync(r => r.Slug == slug, ct);
         var created = recipe is null;
         var now = DateTime.UtcNow;
 
@@ -45,14 +54,38 @@ public partial class RecipeService
         }
 
         recipe.Title = request.Title.Trim();
-        recipe.SourceUrl = string.IsNullOrWhiteSpace(request.SourceUrl) ? null : request.SourceUrl.Trim();
+        recipe.SourceUrl = Clean(request.SourceUrl);
+        recipe.Cuisine = Clean(request.Cuisine)?.ToLowerInvariant();
         recipe.Servings = request.Servings;
         recipe.TotalMinutes = request.TotalMinutes;
         recipe.ActiveMinutes = request.ActiveMinutes;
         recipe.Tags = string.Join(",", (request.Tags ?? []).Select(t => t.Trim()).Where(t => t.Length > 0));
         recipe.FreezesWell = request.FreezesWell;
         recipe.KeepsDays = request.KeepsDays;
-        recipe.Content = request.Content;
+        recipe.Intro = Clean(request.Intro);
+        recipe.Leftovers = Clean(request.Leftovers);
+        recipe.Notes = Clean(request.Notes);
+
+        // Replace ingredients and steps as a whole; removed rows are deleted as orphans.
+        recipe.Ingredients.Clear();
+        recipe.Ingredients.AddRange((request.Ingredients ?? []).Select((i, pos) => new RecipeIngredient
+        {
+            Position = pos,
+            Section = Clean(i.section),
+            Amount = i.amount,
+            Unit = Clean(i.unit),
+            Name = i.name.Trim(),
+            Note = Clean(i.note),
+        }));
+
+        recipe.Steps.Clear();
+        recipe.Steps.AddRange((request.Steps ?? []).Select((s, pos) => new RecipeStep
+        {
+            Position = pos,
+            Section = Clean(s.section),
+            Text = s.text.Trim(),
+        }));
+
         recipe.UpdatedAt = now;
 
         await _db.SaveChangesAsync(ct);
@@ -85,8 +118,48 @@ public partial class RecipeService
             return "Tags are too long (max 500 characters in total).";
         if (request.Tags is not null && request.Tags.Any(t => t.Contains(',')))
             return "Tags must not contain commas.";
+        if (request.Cuisine is { Length: > 50 })
+            return "Cuisine is too long (max 50 characters).";
+        if (request.Servings is < 1 or > 1000)
+            return "Servings must be between 1 and 1000.";
+        if (request.TotalMinutes is < 0 || request.ActiveMinutes is < 0 || request.KeepsDays is < 0)
+            return "Times and days must not be negative.";
+        if (request.Intro is { Length: > MaxMarkdown } || request.Leftovers is { Length: > MaxMarkdown }
+            || request.Notes is { Length: > MaxMarkdown })
+            return $"Intro, leftovers and notes are limited to {MaxMarkdown} characters each.";
+
+        var ingredients = request.Ingredients ?? [];
+        if (ingredients.Length > MaxRows)
+            return $"At most {MaxRows} ingredients.";
+        foreach (var i in ingredients)
+        {
+            if (i is null || string.IsNullOrWhiteSpace(i.name) || i.name.Length > 200)
+                return "Every ingredient needs a name (max 200 characters).";
+            if (i.amount is < 0 or >= 1_000_000)
+                return $"Invalid amount for \"{i.name}\".";
+            if (i.unit is { Length: > 30 } || i.note is { Length: > 200 } || i.section is { Length: > 100 })
+                return $"Unit, note or section too long for \"{i.name}\".";
+        }
+
+        var steps = request.Steps ?? [];
+        if (steps.Length > MaxRows)
+            return $"At most {MaxRows} steps.";
+        foreach (var st in steps)
+        {
+            if (st is null || string.IsNullOrWhiteSpace(st.text) || st.text.Length > 2000)
+                return "Every step needs text (max 2000 characters).";
+            if (st.section is { Length: > 100 })
+                return "Step section is too long (max 100 characters).";
+        }
+
         return null;
     }
+
+    private const int MaxRows = 100;
+    private const int MaxMarkdown = 20_000;
+
+    private static string? Clean(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
     [GeneratedRegex("^(?=.{1,200}$)[a-z0-9]+(?:-[a-z0-9]+)*$")]
     private static partial Regex SlugRegex();
@@ -97,10 +170,15 @@ public partial class RecipeService
             : tags.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
     private static RecipeSummaryDto ToSummary(Recipe r) => new(
-        r.Id, r.Title, r.Slug, r.SourceUrl, r.Servings, r.TotalMinutes, r.ActiveMinutes,
+        r.Id, r.Title, r.Slug, r.SourceUrl, r.Cuisine, r.Servings, r.TotalMinutes, r.ActiveMinutes,
         SplitTags(r.Tags), r.FreezesWell, r.KeepsDays, r.UpdatedAt);
 
     private static RecipeDto ToDto(Recipe r) => new(
-        r.Id, r.Title, r.Slug, r.SourceUrl, r.Servings, r.TotalMinutes, r.ActiveMinutes,
-        SplitTags(r.Tags), r.FreezesWell, r.KeepsDays, r.Content, r.CreatedAt, r.UpdatedAt);
+        r.Id, r.Title, r.Slug, r.SourceUrl, r.Cuisine, r.Servings, r.TotalMinutes, r.ActiveMinutes,
+        SplitTags(r.Tags), r.FreezesWell, r.KeepsDays, r.Intro,
+        r.Ingredients.OrderBy(i => i.Position)
+            .Select(i => new IngredientDto(i.Section, i.Amount, i.Unit, i.Name, i.Note)).ToArray(),
+        r.Steps.OrderBy(s => s.Position)
+            .Select(s => new StepDto(s.Section, s.Text)).ToArray(),
+        r.Leftovers, r.Notes, r.CreatedAt, r.UpdatedAt);
 }

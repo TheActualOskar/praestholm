@@ -59,7 +59,10 @@ export default function RecipesPage() {
         return recipes.filter(
             (r) =>
                 (!activeTag || r.tags.includes(activeTag)) &&
-                (!q || r.title.toLowerCase().includes(q) || r.tags.some((t) => t.toLowerCase().includes(q))),
+                (!q ||
+                    r.title.toLowerCase().includes(q) ||
+                    r.cuisine?.toLowerCase().includes(q) ||
+                    r.tags.some((t) => t.toLowerCase().includes(q))),
         );
     }, [recipes, query, activeTag]);
 
@@ -167,6 +170,7 @@ function RecipeCard({ recipe }: { recipe: RecipeSummary }) {
                 </p>
 
                 <div className="BlogCard__tags">
+                    {recipe.cuisine && <Pill>{recipe.cuisine}</Pill>}
                     {recipe.freezesWell && <Pill>❄ kan fryses</Pill>}
                     {recipe.tags.slice(0, 4).map((tag) => (
                         <Pill key={tag}>{tag}</Pill>

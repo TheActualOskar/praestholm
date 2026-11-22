@@ -1,7 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Markdown from "react-markdown";
-import { fetchRecipe, formatMinutes, NotLoggedInError, type Recipe } from "../api/recipes";
+import {
+    fetchRecipe,
+    formatAmount,
+    formatMinutes,
+    groupBySection,
+    NotLoggedInError,
+    type Ingredient,
+    type Recipe,
+} from "../api/recipes";
 import Pill from "../shared/components/Pill";
 import RecipeLogin from "./RecipeLogin";
 import "./BlogPage.css";
@@ -100,6 +108,7 @@ function RecipeView({ recipe }: { recipe: Recipe }) {
             )}
 
             <div className="BlogPost__tags">
+                {recipe.cuisine && <Pill>{recipe.cuisine}</Pill>}
                 {recipe.freezesWell && <Pill>❄ kan fryses</Pill>}
                 {recipe.tags.map((tag) => (
                     <Pill key={tag}>{tag}</Pill>
@@ -113,8 +122,80 @@ function RecipeView({ recipe }: { recipe: Recipe }) {
             )}
 
             <div className="BlogPost__content">
-                <Markdown>{recipe.content}</Markdown>
+                {recipe.intro && <Markdown>{recipe.intro}</Markdown>}
+
+                {recipe.ingredients.length > 0 && (
+                    <>
+                        <h2>Ingredienser</h2>
+                        {groupBySection(recipe.ingredients).map((group, gi) => (
+                            <section key={gi}>
+                                {group.section && <h3>{group.section}</h3>}
+                                <ul className="Recipe__ingredients">
+                                    {group.items.map((ing, i) => (
+                                        <IngredientLine key={i} ingredient={ing} />
+                                    ))}
+                                </ul>
+                            </section>
+                        ))}
+                    </>
+                )}
+
+                {recipe.steps.length > 0 && (
+                    <>
+                        <h2>Fremgangsmåde</h2>
+                        <StepList recipe={recipe} />
+                    </>
+                )}
+
+                {recipe.leftovers && (
+                    <>
+                        <h2>Rester og restebrug</h2>
+                        <Markdown>{recipe.leftovers}</Markdown>
+                    </>
+                )}
+
+                {recipe.notes && (
+                    <>
+                        <h2>Noter</h2>
+                        <Markdown>{recipe.notes}</Markdown>
+                    </>
+                )}
             </div>
+        </>
+    );
+}
+
+function IngredientLine({ ingredient: i }: { ingredient: Ingredient }) {
+    const quantity = [i.amount != null ? formatAmount(i.amount) : null, i.unit].filter(Boolean).join(" ");
+    return (
+        <li>
+            {quantity && <span className="Recipe__quantity">{quantity}</span>} {i.name}
+            {i.note && <span className="Recipe__note">, {i.note}</span>}
+        </li>
+    );
+}
+
+/** Steps are numbered continuously across sections. */
+function StepList({ recipe }: { recipe: Recipe }) {
+    const groups = groupBySection(recipe.steps);
+    const starts = groups.map((_, gi) => 1 + groups.slice(0, gi).reduce((n, g) => n + g.items.length, 0));
+    return (
+        <>
+            {groups.map((group, gi) => {
+                const start = starts[gi];
+                return (
+                    <section key={gi}>
+                        {group.section && <h3>{group.section}</h3>}
+                        <ol start={start}>
+                            {group.items.map((step, i) => (
+                                <li key={i}>
+                                    <Markdown>{step.text}</Markdown>
+                                </li>
+                            ))}
+                        </ol>
+                    </section>
+                );
+            })}
         </>
     );
 }
