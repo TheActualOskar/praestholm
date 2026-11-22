@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { themeFor } from "../api/recipeThemes";
 import { useRecipeList } from "../api/useRecipeList";
+import { useBasket } from "../api/useBasket";
 import Pill from "../shared/components/Pill";
 import RecipeBrowser from "./RecipeBrowser";
 import RecipeLogin from "./RecipeLogin";
@@ -12,6 +13,7 @@ export default function RecipeThemePage() {
     const { cuisine = "" } = useParams<{ cuisine: string }>();
     const theme = themeFor(cuisine);
     const { state, reload } = useRecipeList();
+    const basket = useBasket(state.kind === "ready");
 
     const count = state.kind === "ready" ? state.recipes.filter((r) => r.cuisine === theme.key).length : 0;
     const newLink = `/opskrifter/ny?koekken=${encodeURIComponent(theme.key)}`;
@@ -63,7 +65,7 @@ export default function RecipeThemePage() {
                             </Link>
                         </div>
                     ) : (
-                        <RecipeBrowser recipes={state.recipes} fixedCuisine={theme.key} />
+                        <RecipeBrowser recipes={state.recipes} fixedCuisine={theme.key} basket={basket} />
                     ))}
             </div>
         </div>

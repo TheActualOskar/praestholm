@@ -360,3 +360,55 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
+
+/* ---- Recipe card: stretched title link + madkurv button ---- */
+
+.RecipeCard {
+    position: relative;
+}
+
+.RecipeCard__link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.RecipeCard__link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+}
+
+.RecipeCard__link:focus-visible {
+    outline: none;
+}
+
+.RecipeCard__link:focus-visible::after {
+    outline: 2px solid var(--accent, #38d6c8);
+    outline-offset: -2px;
+}
+
+.RecipeCard__action {
+    position: relative;
+    z-index: 1;
+}
+
+.RecipeCard__action:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.RecipeCard__inBasket {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent, #38d6c8);
+    text-decoration: none;
+}
+
+.RecipeCard__inBasket:hover {
+    text-decoration: underline;
+}
+
+.Recipes__basketError {
+    margin-top: 12px;
+}
