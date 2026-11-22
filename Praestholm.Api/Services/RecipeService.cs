@@ -146,6 +146,13 @@ public partial class RecipeService
         var recipe = await _db.Recipes.FirstOrDefaultAsync(r => r.Slug == slug, ct);
         if (recipe is null) return false;
 
+        // A draft madkurv drops the dish; locked/ordered baskets keep it (title + snapshot) for history.
+        var draftLines = await _db.BasketRecipes
+            .Where(l => l.RecipeId == recipe.Id
+                        && _db.Baskets.Any(b => b.Id == l.BasketId && b.Status == BasketStatus.Draft))
+            .ToListAsync(ct);
+        _db.BasketRecipes.RemoveRange(draftLines);
+
         _db.Recipes.Remove(recipe);
         await _db.SaveChangesAsync(ct);
         return true;

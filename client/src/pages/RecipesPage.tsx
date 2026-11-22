@@ -31,7 +31,10 @@ export default function RecipesPage() {
                     </div>
                     {state.kind === "ready" && (
                         <div className="Recipes__headerActions">
-                            <Link to="/opskrifter/ny" className="RecipeLogin__button">
+                            <Link to="/madkurv" className="RecipeLogin__button">
+                                Madkurv
+                            </Link>
+                            <Link to="/opskrifter/ny" className="Recipes__logout">
                                 + Ny opskrift
                             </Link>
                             <button className="Recipes__logout" onClick={() => setShowInvite(!showInvite)}>

@@ -13,9 +13,11 @@ import {
 import { cuisinePath } from "../api/recipeThemes";
 import Pill from "../shared/components/Pill";
 import RecipeLogin from "./RecipeLogin";
+import AddToBasket from "./AddToBasket";
 import "./BlogPage.css";
 import "./RecipesPage.css";
 import "./RecipeEditor.css";
+import "./Madkurv.css";
 
 type State =
     | { kind: "loading" }
@@ -128,6 +130,7 @@ function RecipeView({ recipe }: { recipe: Recipe }) {
             </div>
 
             <div className="Recipe__actions">
+                {!recipe.isDraft && <AddToBasket recipeId={recipe.id} defaultServings={recipe.servings} />}
                 <Link to={`/opskrifter/${recipe.slug}/rediger`} className="Recipes__logout">
                     Rediger
                 </Link>
