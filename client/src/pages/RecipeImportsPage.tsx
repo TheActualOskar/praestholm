@@ -83,6 +83,11 @@ export default function RecipeImportsPage() {
                                 <h2 className="Madkurv__heading">Links</h2>
                                 {waiting > 0 && <span className="Madkurv__muted">{waiting} venter på generatoren</span>}
                             </div>
+                            {waiting > 0 && (
+                                <p className="Editor__hint">
+                                    Kør <code>praestholm-generer</code> i en terminal på PC’en for at lave dem om til kladder.
+                                </p>
+                            )}
                             {items === null ? (
                                 !error && (
                                     <div className="spinner">
