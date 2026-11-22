@@ -50,6 +50,7 @@ public static class MadkurvEndpoints
 
         basket.MapPost("/klar", (MadkurvService s, CancellationToken ct) => Run(() => s.LockAsync(ct)));
         basket.MapPost("/ret-igen", (MadkurvService s, CancellationToken ct) => Run(() => s.ReopenAsync(ct)));
+        basket.MapPost("/toem", (MadkurvService s, CancellationToken ct) => Run(() => s.ClearAsync(ct)));
         basket.MapPost("/bestilt", (MarkOrderedRequest r, MadkurvService s, CancellationToken ct) => Run(() => s.MarkOrderedAsync(r, ct)));
 
         basket.MapGet("/historik", (MadkurvService s, CancellationToken ct) => Run(() => s.GetHistoryAsync(ct)));

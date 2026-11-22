@@ -200,6 +200,30 @@ public class MadkurvService
         return await ToDtoAsync(basket, ct);
     }
 
+    /// <summary>
+    /// "Tøm madkurv": removes all dishes, extras and "har det" choices. A locked basket is unlocked first
+    /// (snapshot dropped, wishes released). Wishes and staples are shared lists and stay.
+    /// </summary>
+    public async Task<BasketDto> ClearAsync(CancellationToken ct = default)
+    {
+        var basket = await LoadCurrentAsync(ct);
+        if (basket.Status != BasketStatus.Draft)
+        {
+            basket.Items.Clear();
+            await _db.HouseholdItems
+                .Where(w => w.Kind == HouseholdListKind.Wish && w.BasketId == basket.Id)
+                .UpdateEachAsync(w => w.BasketId = null, ct);
+            basket.Status = BasketStatus.Draft;
+            basket.LockedAt = null;
+        }
+
+        basket.Recipes.Clear();
+        basket.Extras.Clear();
+        basket.Checks.Clear();
+        await _db.SaveChangesAsync(ct);
+        return await ToDtoAsync(basket, ct);
+    }
+
     /// <summary>Klar/Fyldt -> Bestilt. The next GET opens a fresh draft.</summary>
     public async Task<BasketDto> MarkOrderedAsync(MarkOrderedRequest request, CancellationToken ct = default)
     {

@@ -4,6 +4,7 @@ import { formatAmount, NotLoggedInError } from "../api/recipes";
 import { parseIngredientLine } from "../api/recipeText";
 import {
     addListItem,
+    clearBasket,
     addSpiceSuggestions,
     DAYS,
     deleteListItem,
@@ -194,7 +195,24 @@ function BasketTab({ onAuthError }: TabProps) {
             )}
 
             <section className="Editor__card">
-                <h2 className="Madkurv__heading">Retter</h2>
+                <div className="Madkurv__listHeader">
+                    <h2 className="Madkurv__heading">Retter</h2>
+                    {(basket.recipes.length > 0 || basket.extras.length > 0) && (
+                        <button
+                            type="button"
+                            className="Editor__danger"
+                            disabled={busy}
+                            onClick={() => {
+                                const msg = locked
+                                    ? "Tøm madkurven? Den bliver låst op, og alle retter og ekstra varer fjernes. Ønsker og faste varer bliver."
+                                    : "Tøm madkurven? Alle retter og ekstra varer fjernes. Ønsker og faste varer bliver.";
+                                if (window.confirm(msg)) void run(clearBasket);
+                            }}
+                        >
+                            Tøm madkurv
+                        </button>
+                    )}
+                </div>
                 {basket.recipes.length === 0 ? (
                     <p className="Editor__hint">
                         Ingen retter endnu. Find en opskrift og tryk “Læg i madkurv”. <Link to="/opskrifter">Se opskrifter</Link>
