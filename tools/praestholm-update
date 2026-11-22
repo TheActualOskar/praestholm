@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 # Generate draft recipes from the links in "Til generering" on praestholm.dk.
-# Install: ln -s ~/projects/praestholm/tools/praestholm-generer ~/.local/bin/praestholm-generer
+# Install: ln -s ~/projects/praestholm/tools/praestholm-update ~/.local/bin/praestholm-update
 set -euo pipefail
 exec python3 -I "$HOME/projects/praestholm/tools/generate_recipes.py" "$@"
