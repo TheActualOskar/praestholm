@@ -1,0 +1,281 @@
+/* =========================================
+   Madkurv (weekly basket) and household lists
+   ========================================= */
+
+.Madkurv__tabs {
+    margin-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.Madkurv__tabs a {
+    text-decoration: none;
+}
+
+.Madkurv__content {
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 860px;
+}
+
+.Madkurv__heading {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.Madkurv__muted {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.Madkurv__flash {
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(56, 214, 200, 0.35);
+    background: rgba(56, 214, 200, 0.10);
+    color: var(--accent, #38d6c8);
+    font-weight: 600;
+}
+
+/* ---- Status ---- */
+
+.Madkurv__status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 20px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.Madkurv__status > div:first-child {
+    flex: 1 1 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.Madkurv__status.is-ready {
+    border-color: rgba(56, 214, 200, 0.4);
+    background: linear-gradient(135deg, rgba(56, 214, 200, 0.12), rgba(255, 255, 255, 0.03));
+}
+
+.Madkurv__statusTitle {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.Madkurv__statusActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.Madkurv__delivery {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.Madkurv__delivery .Editor__input {
+    width: auto;
+    color-scheme: dark;
+}
+
+/* ---- Recipes ---- */
+
+.Madkurv__recipes,
+.Madkurv__items,
+.Madkurv__plainList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.Madkurv__recipe {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.Madkurv__recipe:first-child {
+    border-top: 0;
+}
+
+.Madkurv__recipeMain {
+    flex: 1 1 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.Madkurv__recipeTitle {
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.92);
+    text-decoration: none;
+}
+
+a.Madkurv__recipeTitle:hover {
+    color: var(--accent, #38d6c8);
+}
+
+.Madkurv__note {
+    padding: 6px 10px;
+    font-size: 13.5px;
+}
+
+.Madkurv__recipeControls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.Madkurv__stepper {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 0 4px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    font-size: 13.5px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.85);
+    white-space: nowrap;
+}
+
+/* ---- Plain lists (wishes, staples, pantry) ---- */
+
+.Madkurv__plainList li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 7px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 14.5px;
+}
+
+.Madkurv__plainList li:first-child {
+    border-top: 0;
+}
+
+.Madkurv__plainList li.is-paused > span:first-child {
+    opacity: 0.45;
+    text-decoration: line-through;
+}
+
+.Madkurv__rowActions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.Madkurv__quickAdd {
+    display: flex;
+    gap: 8px;
+}
+
+.Madkurv__quickAdd .Editor__input {
+    flex: 1;
+}
+
+/* ---- Shopping list ---- */
+
+.Madkurv__listHeader {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.Madkurv__item label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 7px 0;
+    cursor: pointer;
+}
+
+.Madkurv__item input {
+    margin-top: 3px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    accent-color: var(--accent, #38d6c8);
+}
+
+.Madkurv__itemText {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14.5px;
+}
+
+.Madkurv__item.is-have .Madkurv__itemText > span:first-child {
+    opacity: 0.5;
+    text-decoration: line-through;
+}
+
+.Madkurv__have {
+    margin-top: 4px;
+}
+
+.Madkurv__have summary {
+    cursor: pointer;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.Madkurv__historyRecipes {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+}
+
+/* ---- Add to basket (recipe page) ---- */
+
+.AddToBasket {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.AddToBasket__done {
+    font-size: 13.5px;
+    color: var(--accent, #38d6c8);
+    font-weight: 600;
+}
+
+@media (max-width: 640px) {
+    .Madkurv__recipeControls {
+        width: 100%;
+        justify-content: space-between;
+    }
+}

@@ -31,6 +31,7 @@ builder.Services.AddDbContext<BlogDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Blog")));
 builder.Services.AddScoped<BlogService>();
 builder.Services.AddScoped<RecipeService>();
+builder.Services.AddScoped<MadkurvService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<InviteService>();
 builder.Services.AddSingleton<EmailSender>();
@@ -145,6 +146,7 @@ app.UseAuthorization();
 app.MapProjectsEndpoints();
 app.MapBlogEndpoints();
 app.MapRecipeEndpoints();
+app.MapMadkurvEndpoints();
 app.MapUserEndpoints();
 app.MapInviteEndpoints();
 

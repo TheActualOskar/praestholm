@@ -12,6 +12,12 @@ public class BlogDbContext : DbContext, IDataProtectionKeyContext
     public DbSet<Recipe> Recipes => Set<Recipe>();
     public DbSet<RecipeIngredient> RecipeIngredients => Set<RecipeIngredient>();
     public DbSet<RecipeStep> RecipeSteps => Set<RecipeStep>();
+    public DbSet<Basket> Baskets => Set<Basket>();
+    public DbSet<BasketRecipe> BasketRecipes => Set<BasketRecipe>();
+    public DbSet<BasketExtra> BasketExtras => Set<BasketExtra>();
+    public DbSet<BasketCheck> BasketChecks => Set<BasketCheck>();
+    public DbSet<BasketItem> BasketItems => Set<BasketItem>();
+    public DbSet<HouseholdItem> HouseholdItems => Set<HouseholdItem>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Invite> Invites => Set<Invite>();
 
@@ -80,6 +86,61 @@ public class BlogDbContext : DbContext, IDataProtectionKeyContext
             entity.HasIndex(e => new { e.RecipeId, e.Position });
             entity.Property(e => e.Section).HasMaxLength(100);
             entity.Property(e => e.Text).HasMaxLength(2000);
+        });
+
+        modelBuilder.Entity<Basket>(entity =>
+        {
+            entity.HasIndex(e => e.Status);
+            entity.HasMany(e => e.Recipes).WithOne().HasForeignKey(e => e.BasketId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasMany(e => e.Extras).WithOne().HasForeignKey(e => e.BasketId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasMany(e => e.Checks).WithOne().HasForeignKey(e => e.BasketId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasMany(e => e.Items).WithOne().HasForeignKey(e => e.BasketId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<BasketRecipe>(entity =>
+        {
+            entity.Property(e => e.RecipeTitle).HasMaxLength(200);
+            entity.Property(e => e.Note).HasMaxLength(200);
+            entity.Property(e => e.AddedBy).HasMaxLength(50);
+            // Deleting a recipe keeps the basket line (and its title) for history.
+            entity.HasOne(e => e.Recipe).WithMany().HasForeignKey(e => e.RecipeId).OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<BasketExtra>(entity =>
+        {
+            entity.Property(e => e.Name).HasMaxLength(200);
+            entity.Property(e => e.Amount).HasPrecision(10, 3);
+            entity.Property(e => e.Unit).HasMaxLength(30);
+            entity.Property(e => e.Note).HasMaxLength(200);
+            entity.Property(e => e.AddedBy).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<BasketCheck>(entity =>
+        {
+            entity.Property(e => e.Key).HasMaxLength(250);
+            entity.HasIndex(e => new { e.BasketId, e.Key }).IsUnique();
+        });
+
+        modelBuilder.Entity<BasketItem>(entity =>
+        {
+            entity.HasIndex(e => new { e.BasketId, e.Position });
+            entity.Property(e => e.Key).HasMaxLength(250);
+            entity.Property(e => e.Name).HasMaxLength(200);
+            entity.Property(e => e.Amount).HasPrecision(12, 3);
+            entity.Property(e => e.Unit).HasMaxLength(30);
+            entity.Property(e => e.Sources).HasMaxLength(1000);
+            entity.Property(e => e.Note).HasMaxLength(200);
+        });
+
+        modelBuilder.Entity<HouseholdItem>(entity =>
+        {
+            entity.HasIndex(e => new { e.Kind, e.BasketId });
+            entity.Property(e => e.Name).HasMaxLength(200);
+            entity.Property(e => e.Amount).HasPrecision(10, 3);
+            entity.Property(e => e.Unit).HasMaxLength(30);
+            entity.Property(e => e.Note).HasMaxLength(200);
+            entity.Property(e => e.AddedBy).HasMaxLength(50);
+            entity.HasOne<Basket>().WithMany().HasForeignKey(e => e.BasketId).OnDelete(DeleteBehavior.SetNull);
         });
 
         modelBuilder.Entity<BlogPost>(entity =>
