@@ -95,6 +95,9 @@ public class BasketItem
     public string? Note { get; set; }
     public bool Have { get; set; }
     public bool FromPantry { get; set; }
+
+    /// <summary>Skipped because a ticked krydderiskab item covers it.</summary>
+    public bool Ignored { get; set; }
 }
 
 public enum HouseholdListKind
@@ -107,6 +110,12 @@ public enum HouseholdListKind
 
     /// <summary>Beholdning: already at home; subtracted from the shopping list.</summary>
     Pantry = 2,
+
+    /// <summary>
+    /// Krydderiskab: checklist of basics. Active (ticked) = ignored, never bought;
+    /// unticked = bought when a recipe needs it.
+    /// </summary>
+    Spice = 3,
 }
 
 public class HouseholdItem
@@ -137,7 +146,12 @@ public record BasketExtraDto(int id, string name, decimal? amount, string? unit,
 
 /// <param name="key">Stable id of the merged item (name|unit group); used for "har det".</param>
 /// <param name="fromPantry">The pantry covers it (shown under "Har allerede").</param>
-public record ShoppingItemDto(string key, string name, decimal? amount, string? unit, string[] sources, string? note, bool have, bool fromPantry);
+/// <param name="ignored">A ticked krydderiskab item covers it; never bought.</param>
+/// <param name="ignoredBy">Id of that krydderiskab item (to untick it from the list); null in snapshots.</param>
+/// <param name="ignoredAs">Name of that krydderiskab item, e.g. "olie" for "olivenolie".</param>
+public record ShoppingItemDto(
+    string key, string name, decimal? amount, string? unit, string[] sources, string? note, bool have, bool fromPantry,
+    bool ignored = false, int? ignoredBy = null, string? ignoredAs = null);
 
 /// <param name="status">"kladde", "klar", "fyldt" or "bestilt".</param>
 public record BasketDto(

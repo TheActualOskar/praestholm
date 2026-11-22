@@ -4,6 +4,7 @@ import { formatAmount, NotLoggedInError } from "../api/recipes";
 import { parseIngredientLine } from "../api/recipeText";
 import {
     addListItem,
+    addSpiceSuggestions,
     DAYS,
     deleteListItem,
     fetchBasket,
@@ -39,6 +40,7 @@ const TABS: { path: string; label: string }[] = [
     { path: "faste-varer", label: "Faste varer" },
     { path: "oensker", label: "Ønsker" },
     { path: "beholdning", label: "Beholdning" },
+    { path: "krydderiskab", label: "Krydderiskab" },
     { path: "historik", label: "Historik" },
 ];
 
@@ -57,6 +59,11 @@ const LIST_INFO: Record<ListKind, { title: string; hint: string; placeholder: st
         title: "Beholdning",
         hint: "Det, I har derhjemme. Trækkes fra indkøbslisten. Uden mængde betyder “vi har nok”, fx salt eller olivenolie.",
         placeholder: "fx 500 g ris",
+    },
+    krydderiskab: {
+        title: "Krydderiskab",
+        hint: "Sæt flueben ved det, I altid har. Det bliver aldrig købt, heller ikke når en opskrift bruger det. Fjern fluebenet, når noget er løbet tør, så kommer det med, næste gang en opskrift skal bruge det.",
+        placeholder: "fx kardemomme",
     },
 };
 
@@ -109,6 +116,8 @@ export default function MadkurvPage() {
                     <BasketTab key={session} onAuthError={onAuthError} />
                 ) : tab === "historik" ? (
                     <HistoryTab key={session} onAuthError={onAuthError} />
+                ) : tab === "krydderiskab" ? (
+                    <SpiceTab key={session} onAuthError={onAuthError} />
                 ) : tab in LIST_INFO ? (
                     <ListTab key={`${tab}-${session}`} kind={tab as ListKind} onAuthError={onAuthError} />
                 ) : (
@@ -260,7 +269,17 @@ function BasketTab({ onAuthError }: TabProps) {
                 />
             </section>
 
-            <ShoppingList basket={basket} busy={busy} onToggle={(item) => run(() => setHave(item.key, !item.have))} />
+            <ShoppingList
+                basket={basket}
+                busy={busy}
+                onToggle={(item) => run(() => setHave(item.key, !item.have))}
+                onOutOf={(item) =>
+                    run(async () => {
+                        await updateListItem("krydderiskab", item.ignoredBy!, { name: item.ignoredAs!, amount: null, unit: null, note: null, active: false });
+                        return fetchBasket();
+                    })
+                }
+            />
         </div>
     );
 }
@@ -406,10 +425,22 @@ function RecipeRow({
     );
 }
 
-function ShoppingList({ basket, busy, onToggle }: { basket: Basket; busy: boolean; onToggle: (item: ShoppingItem) => void }) {
+function ShoppingList({
+    basket,
+    busy,
+    onToggle,
+    onOutOf,
+}: {
+    basket: Basket;
+    busy: boolean;
+    onToggle: (item: ShoppingItem) => void;
+    onOutOf: (item: ShoppingItem) => void;
+}) {
     const [copied, setCopied] = useState(false);
     const toBuy = basket.items.filter((i) => !i.have);
-    const have = basket.items.filter((i) => i.have);
+    const have = basket.items.filter((i) => i.have && !i.ignored);
+    const ignored = basket.items.filter((i) => i.ignored);
+    const editable = basket.status === "kladde";
 
     async function copy() {
         const text = toBuy.map((i) => `${formatQuantity(i.amount, i.unit)} ${i.name}`.trim()).join("\n");
@@ -451,6 +482,29 @@ function ShoppingList({ basket, busy, onToggle }: { basket: Basket; busy: boolea
                             <ul className="Madkurv__items">
                                 {have.map((i) => (
                                     <ItemRow key={i.key} item={i} busy={busy} onToggle={onToggle} />
+                                ))}
+                            </ul>
+                        </details>
+                    )}
+                    {ignored.length > 0 && (
+                        <details className="Madkurv__have">
+                            <summary>Ignoreret, krydderiskab ({ignored.length})</summary>
+                            <ul className="Madkurv__plainList">
+                                {ignored.map((i) => (
+                                    <li key={i.key}>
+                                        <span>
+                                            {i.amount != null && <strong>{formatQuantity(i.amount, i.unit)} </strong>}
+                                            {i.name}
+                                            {i.ignoredAs && i.ignoredAs.toLowerCase() !== i.name.toLowerCase() && (
+                                                <span className="Madkurv__muted"> · som “{i.ignoredAs}”</span>
+                                            )}
+                                        </span>
+                                        {editable && i.ignoredBy != null && (
+                                            <button type="button" className="Recipes__tag" disabled={busy} onClick={() => onOutOf(i)} title="Fjern fluebenet i krydderiskabet, så det bliver købt">
+                                                Løbet tør
+                                            </button>
+                                        )}
+                                    </li>
                                 ))}
                             </ul>
                         </details>
@@ -580,6 +634,93 @@ function ListTab({ kind, onAuthError }: TabProps & { kind: ListKind }) {
                 </ul>
             )}
             <QuickAdd placeholder={info.placeholder} busy={busy} onAdd={(item) => run(() => addListItem(kind, item))} />
+        </section>
+    );
+}
+
+// ---------- Krydderiskab (checklist) ----------
+
+function SpiceTab({ onAuthError }: TabProps) {
+    const info = LIST_INFO.krydderiskab;
+    const [items, setItems] = useState<HouseholdItem[] | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [busy, setBusy] = useState(false);
+
+    const run = useCallback(
+        async (action: () => Promise<HouseholdItem[] | unknown>) => {
+            setBusy(true);
+            setError(null);
+            try {
+                await action();
+                setItems(await fetchList("krydderiskab"));
+            } catch (e) {
+                if (!onAuthError(e)) setError(errorText(e));
+            } finally {
+                setBusy(false);
+            }
+        },
+        [onAuthError],
+    );
+
+    useEffect(() => {
+        void run(async () => {});
+    }, [run]);
+
+    const ticked = items?.filter((i) => i.active).length ?? 0;
+
+    return (
+        <section className="Editor__card Madkurv__content">
+            <div className="Madkurv__listHeader">
+                <h2 className="Madkurv__heading">{info.title}</h2>
+                <button type="button" className="Recipes__logout" disabled={busy} onClick={() => run(addSpiceSuggestions)}>
+                    Tilføj forslag
+                </button>
+            </div>
+            <p className="Editor__hint">{info.hint}</p>
+            <p className="Editor__hint">
+                Et flueben dækker også sammensatte navne: “olie” dækker olivenolie, “peber” dækker cayennepeber og “salt og peber”.
+                Friske urter (“frisk oregano”) bliver altid købt.
+            </p>
+            {error && (
+                <div className="Editor__error" role="alert">
+                    {error}
+                </div>
+            )}
+            {items === null ? (
+                !error && (
+                    <div className="spinner">
+                        <div className="spinner__circle" />
+                        Henter…
+                    </div>
+                )
+            ) : items.length === 0 ? (
+                <p className="Editor__hint">Tomt. Tryk “Tilføj forslag” for at starte med salt, peber, olie, smør, mel og de almindelige krydderier.</p>
+            ) : (
+                <>
+                    <p className="Madkurv__muted">
+                        {ticked} af {items.length} ignoreres
+                    </p>
+                    <ul className="Spices">
+                        {items.map((i) => (
+                            <li key={i.id} className={`Spices__item ${i.active ? "" : "is-out"}`}>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={i.active}
+                                        disabled={busy}
+                                        onChange={() => run(() => updateListItem("krydderiskab", i.id, { ...i, active: !i.active }))}
+                                    />
+                                    <span>{i.name}</span>
+                                </label>
+                                <button type="button" className="Editor__iconButton" disabled={busy} aria-label={`Fjern ${i.name}`} onClick={() => run(() => deleteListItem("krydderiskab", i.id))}>
+                                    ×
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </>
+            )}
+            <QuickAdd placeholder={info.placeholder} busy={busy} onAdd={(item) => run(() => addListItem("krydderiskab", { ...item, active: true }))} />
         </section>
     );
 }

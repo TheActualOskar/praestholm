@@ -27,6 +27,12 @@ export type ShoppingItem = {
     note: string | null;
     have: boolean;
     fromPantry: boolean;
+    /** A ticked krydderiskab item covers it; never bought. */
+    ignored: boolean;
+    /** Id of that krydderiskab item (null in a locked snapshot). */
+    ignoredBy: number | null;
+    /** Its name, e.g. "olie" for "olivenolie". */
+    ignoredAs: string | null;
 };
 
 export type HouseholdItem = {
@@ -63,7 +69,7 @@ export type BasketSummary = {
     itemCount: number;
 };
 
-export type ListKind = "faste-varer" | "oensker" | "beholdning";
+export type ListKind = "faste-varer" | "oensker" | "beholdning" | "krydderiskab";
 
 export type ItemInput = { name: string; amount: number | null; unit: string | null; note: string | null; active?: boolean };
 
@@ -104,6 +110,7 @@ export const fetchList = (kind: ListKind) => call<HouseholdItem[]>(`/api/lister/
 export const addListItem = (kind: ListKind, item: ItemInput) => call<HouseholdItem>(`/api/lister/${kind}`, "POST", item);
 export const updateListItem = (kind: ListKind, id: number, item: ItemInput) =>
     call<HouseholdItem>(`/api/lister/${kind}/${id}`, "PUT", item);
+export const addSpiceSuggestions = () => call<HouseholdItem[]>("/api/lister/krydderiskab/forslag", "POST");
 export const deleteListItem = (kind: ListKind, id: number) => call<void>(`/api/lister/${kind}/${id}`, "DELETE");
 
 /** ISO 8601 week number ("uge 48"). */

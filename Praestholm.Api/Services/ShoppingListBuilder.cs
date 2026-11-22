@@ -80,11 +80,15 @@ public static partial class ShoppingListBuilder
 
     /// <param name="pantry">Beholdning: name, amount and unit at home.</param>
     /// <param name="checks">Manual "har det" choices by item key (true = skip, false = buy anyway).</param>
+    /// <param name="ignore">Ticked krydderiskab items: matching ingredients are never bought.</param>
     public static List<ShoppingItemDto> Build(
         IEnumerable<ShoppingLine> lines,
         IEnumerable<(string name, decimal? amount, string? unit)> pantry,
-        IReadOnlyDictionary<string, bool> checks)
+        IReadOnlyDictionary<string, bool> checks,
+        IEnumerable<(int id, string name)>? ignore = null)
     {
+        var ignoreList = (ignore ?? []).Select(i => (i.id, i.name, regex: IgnoreRegex(i.name))).ToList();
+
         var groups = new Dictionary<string, Acc>();
         foreach (var line in lines)
         {
@@ -148,6 +152,14 @@ public static partial class ShoppingListBuilder
             if (sum is { } s) (amount, unit) = FromBase(acc.Group, s, acc.DisplayUnit);
             if (string.IsNullOrEmpty(unit)) unit = null;
 
+            var spice = IsFresh(acc.Name) ? default : ignoreList.FirstOrDefault(i => i.regex.IsMatch(NormalizeName(acc.Name)));
+            if (spice.name is not null)
+            {
+                result.Add(new ShoppingItemDto(acc.Key, acc.Name, amount, unit, acc.Sources.ToArray(), null,
+                    have: true, fromPantry: false, ignored: true, ignoredBy: spice.id, ignoredAs: spice.name));
+                continue;
+            }
+
             var have = checks.TryGetValue(acc.Key, out var c) ? c : fromPantry;
             result.Add(new ShoppingItemDto(acc.Key, acc.Name, amount, unit, acc.Sources.ToArray(), note, have, fromPantry));
         }
@@ -155,6 +167,22 @@ public static partial class ShoppingListBuilder
         result.Sort((a, b) => Danish.Compare(a.name, b.name, CompareOptions.IgnoreCase));
         return result;
     }
+
+    /// <summary>
+    /// A krydderiskab item matches when a word in the ingredient ends with it:
+    /// "olie" matches "olivenolie til servering", "peber" matches "salt og peber" and "cayennepeber".
+    /// </summary>
+    public static bool Covers(string ignoreName, string ingredientName) =>
+        !IsFresh(ingredientName) && IgnoreRegex(ignoreName).IsMatch(NormalizeName(ingredientName));
+
+    private static Regex IgnoreRegex(string name) =>
+        new(@"(?<!\p{L})\p{L}*" + Regex.Escape(NormalizeName(name)) + @"(?!\p{L})", RegexOptions.CultureInvariant);
+
+    /// <summary>"frisk oregano", "friske krydderurter": fresh herbs are always bought.</summary>
+    private static bool IsFresh(string ingredientName) => Fresh().IsMatch(NormalizeName(ingredientName));
+
+    [GeneratedRegex(@"(?<!\p{L})friske?(?!\p{L})")]
+    private static partial Regex Fresh();
 
     private static string Format(decimal d) => d.ToString("0.##", CultureInfo.GetCultureInfo("da-DK"));
 

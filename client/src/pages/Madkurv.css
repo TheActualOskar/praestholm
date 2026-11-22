@@ -279,3 +279,58 @@ a.Madkurv__recipeTitle:hover {
         justify-content: space-between;
     }
 }
+
+/* ---- Krydderiskab checklist ---- */
+
+.Spices {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 6px;
+}
+
+.Spices__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 4px 4px 4px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(56, 214, 200, 0.25);
+    background: rgba(56, 214, 200, 0.06);
+}
+
+.Spices__item.is-out {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: transparent;
+}
+
+.Spices__item label {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    cursor: pointer;
+    font-size: 14.5px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.Spices__item.is-out label span {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.Spices__item input {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    accent-color: var(--accent, #38d6c8);
+}
+
+@media (max-width: 640px) {
+    .Spices {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
