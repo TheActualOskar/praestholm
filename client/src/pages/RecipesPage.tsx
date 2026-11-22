@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { logoutRecipes, type RecipeSummary } from "../api/recipes";
 import { cuisinePath, FEATURED_CUISINES, themeFor } from "../api/recipeThemes";
 import { useRecipeList } from "../api/useRecipeList";
+import { useBasket } from "../api/useBasket";
 import RecipeBrowser from "./RecipeBrowser";
 import RecipeLogin from "./RecipeLogin";
 import InviteForm from "./InviteForm";
@@ -12,6 +13,8 @@ import "./RecipeEditor.css";
 
 export default function RecipesPage() {
     const { state, setState, reload } = useRecipeList();
+    const basket = useBasket(state.kind === "ready");
+    const dishCount = basket.basket?.recipes.length ?? 0;
     const [showInvite, setShowInvite] = useState(false);
 
     async function logout() {
@@ -32,7 +35,7 @@ export default function RecipesPage() {
                     {state.kind === "ready" && (
                         <div className="Recipes__headerActions">
                             <Link to="/madkurv" className="RecipeLogin__button">
-                                Madkurv
+                                Madkurv{dishCount > 0 && ` (${dishCount})`}
                             </Link>
                             <Link to="/opskrifter/ny" className="Recipes__logout">
                                 + Ny opskrift
@@ -70,7 +73,7 @@ export default function RecipesPage() {
                                 Ingen opskrifter endnu. <Link to="/opskrifter/ny">Tilføj den første.</Link>
                             </p>
                         ) : (
-                            <RecipeBrowser recipes={state.recipes} />
+                            <RecipeBrowser recipes={state.recipes} basket={basket} />
                         )}
                     </>
                 )}

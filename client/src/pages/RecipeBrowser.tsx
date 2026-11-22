@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import type { RecipeSummary } from "../api/recipes";
+import type { BasketControls } from "../api/useBasket";
 import RecipeCard from "./RecipeCard";
 
 type TimeFilter = "30" | "60" | "lang";
@@ -40,7 +41,15 @@ const SORTS: Record<Sort, (a: RecipeSummary, b: RecipeSummary) => number> = {
  * Search, filters and the recipe grid. Filter state lives in the URL (?q=&tid=&frys=&tag=&sort=)
  * so links and the back button keep it.
  */
-export default function RecipeBrowser({ recipes, fixedCuisine }: { recipes: RecipeSummary[]; fixedCuisine?: string }) {
+export default function RecipeBrowser({
+    recipes,
+    fixedCuisine,
+    basket,
+}: {
+    recipes: RecipeSummary[];
+    fixedCuisine?: string;
+    basket?: BasketControls;
+}) {
     const [params, setParams] = useSearchParams();
     const query = params.get("q") ?? "";
     const time = (params.get("tid") as TimeFilter | null) ?? null;
@@ -168,12 +177,18 @@ export default function RecipeBrowser({ recipes, fixedCuisine }: { recipes: Reci
                 </div>
             </div>
 
+            {basket?.error && (
+                <div className="Editor__error Recipes__basketError" role="alert">
+                    {basket.error}
+                </div>
+            )}
+
             {visible.length === 0 ? (
                 <p className="Blogpage__subtitle">Ingen opskrifter matcher.</p>
             ) : (
                 <div className="BlogGrid">
                     {visible.map((r) => (
-                        <RecipeCard key={r.slug} recipe={r} showCuisine={!fixedCuisine} />
+                        <RecipeCard key={r.slug} recipe={r} showCuisine={!fixedCuisine} basket={basket} />
                     ))}
                 </div>
             )}
